@@ -1,12 +1,11 @@
 <template>
-  <div>
-      Main 
-  </div>
+    <div>
+        Posiciones
+    </div>
 </template>
 <script lang="ts">
 import Vue from 'vue';
 export default Vue.extend({
-  name: 'main'
+  name: 'Positions'
 });
 </script>
-

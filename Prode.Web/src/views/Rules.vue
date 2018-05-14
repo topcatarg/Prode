@@ -1,13 +1,11 @@
 <template>
-  <div>
-      suggestions
-  </div>
+    <div>
+        Rules
+    </div>
 </template>
-
 <script lang="ts">
 import Vue from 'vue';
 export default Vue.extend({
-  name: 'suggestion'
+  name: 'Positions'
 });
 </script>
-
