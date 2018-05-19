@@ -1,0 +1,99 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
+using Prode.API.Helpers;
+using Prode.API.Models;
+using Prode.API.Services;
+using Prode.API.Models.Enums;
+using System.Globalization;
+
+namespace Prode.API.Controllers
+{
+    public class AccountController : Controller
+    {
+
+        //private readonly ISEApiService _seApiService;
+        //private readonly IConfiguration _configuration;
+        private readonly IUserService _userService;
+        //private readonly IAuthorizationService _authorizationService;
+
+        public AccountController(
+            //IConfiguration configuration,
+            //ISEApiService seApiService,
+            IUserService userService
+            //IAuthorizationService authorizationService
+            )
+        {
+            //_seApiService = seApiService;
+            //_configuration = configuration;
+            _userService = userService;
+            //_authorizationService = authorizationService;
+        }
+
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Route("api/login")]
+        public async Task<IActionResult> LogInAsync([FromBody] User user)
+        {
+            //Logueo usr/pass
+            user = await _userService.LoginUserAsync(user.Name, user.Password);
+            if (user == null)
+            {
+                return BadRequest(1);
+            }
+
+            //Me devuelve un token
+            var accessToken = "tokenvalido";
+
+            //Genero las claims. Si pago, no pago, o si es admin!
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimType.Id, user.Id.ToString(CultureInfo.InvariantCulture)),
+                new Claim(ClaimType.Name, user.Name),
+                new Claim(ClaimType.Mail, user.Mail),
+                new Claim(ClaimType.HasPaid, false.ToString()),
+                new Claim(ClaimType.IsAdmin, false.ToString())
+            };
+
+            var identity = new ClaimsIdentity(claims, "login");
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity));
+
+            return Ok();
+
+            ////return Redirect(_seApiService.GetInitialOauthUrl(GetOauthReturnUrl(), returnUrl));
+        }
+
+        [HttpPost]
+        [Route("api/create")]
+        public async Task<IActionResult> CreateUserAsync([FromBody] User user)
+        {
+            if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Password) 
+                || string.IsNullOrEmpty(user.Mail))
+            {
+                return BadRequest(CreateUserResult.BadParameters);
+            }
+            var success = await _userService.CreateUserAsync(user.Name, user.Password, user.Mail);
+            if (success)
+            {
+                return new OkResult();
+            }
+            else
+            {
+                return BadRequest(CreateUserResult.ErrorOnDatabase);
+            }
+        }
+    }
+}
