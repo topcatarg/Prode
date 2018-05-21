@@ -11,9 +11,9 @@
 import Header from '@/components/Header.vue';
 import IConfig from '@/models/Config.ts';
 import IStats from '@/models/Stats.ts';
-import IUserInfo from '@/models/UserInfo.ts';
-import axios from 'axios';
+import Axios from 'axios';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import store from './store';
 
 @Component({
   components: {
@@ -22,7 +22,6 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 })
 export default class App extends Vue {
 
-  public user?: IUserInfo;
   public config?: IConfig;
   public stats?: IStats;
 
@@ -34,6 +33,11 @@ export default class App extends Vue {
       stats: undefined
     };
   }
+
+  private mounted() {
+    store.dispatch('GetUserData');
+  }
+
 }
 </script>
 

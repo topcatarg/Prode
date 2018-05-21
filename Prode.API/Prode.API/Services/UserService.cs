@@ -11,7 +11,7 @@ namespace Prode.API.Services
 
     public interface IUserService
     {
-        Task<User> LoginUserAsync(string user, string password);
+        Task<UserInfo> LoginUserAsync(string user, string password);
 
         Task<bool> CreateUserAsync(string user, string password, string mail);
     }
@@ -26,12 +26,12 @@ namespace Prode.API.Services
             _dbService = dbService;
         }
 
-        public async Task<User> LoginUserAsync(string user, string password)
+        public async Task<UserInfo> LoginUserAsync(string user, string password)
         {
-            User v;
+            UserInfo v;
             using (var db = _dbService.SimpleDbConnection())
             {
-                v = await db.QueryFirstOrDefaultAsync<User>(@"
+                v = await db.QueryFirstOrDefaultAsync<UserInfo>(@"
 Select * 
 From Users
 Where Name=@name 

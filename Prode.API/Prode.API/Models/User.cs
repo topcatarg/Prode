@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Prode.API.Models
 {
-    public class User
+    public class UserInfo
     {
         public int Id { get; set; }
 

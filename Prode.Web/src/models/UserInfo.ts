@@ -1,10 +1,11 @@
-import { UserType } from './UserType';
+export interface IUserInfo {
+    name?: string;
+    mail?: string;
+    hasPaid: boolean;
+    isAdmin: boolean;
+    id?: number;
+}
 
-export default interface IUserInfo {
-    name: string;
-    userType: UserType;
-    canSuggest: boolean;
-    canReview: boolean;
-    canManageUsers: boolean;
-    id: number;
+export interface ProfileState {
+    user?: IUserInfo;
 }

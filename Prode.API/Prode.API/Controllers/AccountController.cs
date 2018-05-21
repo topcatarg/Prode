@@ -12,6 +12,7 @@ using Prode.API.Models;
 using Prode.API.Services;
 using Prode.API.Models.Enums;
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Prode.API.Controllers
 {
@@ -21,19 +22,19 @@ namespace Prode.API.Controllers
         //private readonly ISEApiService _seApiService;
         //private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
-        //private readonly IAuthorizationService _authorizationService;
+        private readonly IAuthorizationService _authorizationService;
 
         public AccountController(
             //IConfiguration configuration,
             //ISEApiService seApiService,
-            IUserService userService
-            //IAuthorizationService authorizationService
+            IUserService userService,
+            IAuthorizationService authorizationService
             )
         {
             //_seApiService = seApiService;
             //_configuration = configuration;
             _userService = userService;
-            //_authorizationService = authorizationService;
+            _authorizationService = authorizationService;
         }
 
         public IActionResult Index()
@@ -43,7 +44,7 @@ namespace Prode.API.Controllers
 
         [HttpPost]
         [Route("api/login")]
-        public async Task<IActionResult> LogInAsync([FromBody] User user)
+        public async Task<IActionResult> LogInAsync([FromBody] UserInfo user)
         {
             //Logueo usr/pass
             user = await _userService.LoginUserAsync(user.Name, user.Password);
@@ -78,7 +79,7 @@ namespace Prode.API.Controllers
 
         [HttpPost]
         [Route("api/create")]
-        public async Task<IActionResult> CreateUserAsync([FromBody] User user)
+        public async Task<IActionResult> CreateUserAsync([FromBody] UserInfo user)
         {
             if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Password) 
                 || string.IsNullOrEmpty(user.Mail))
@@ -95,5 +96,29 @@ namespace Prode.API.Controllers
                 return BadRequest(CreateUserResult.ErrorOnDatabase);
             }
         }
+
+        [Route("api/logout")]
+        public async Task<IActionResult> LogOut(string returnUrl = null)
+        {
+            await HttpContext.SignOutAsync();
+            return Redirect(returnUrl ?? "/");
+        }
+
+        [Authorize]
+        [Route("api/me")]
+        public async Task<IActionResult> WhoAmI()
+        {
+            var isAdmin = (await _authorizationService.AuthorizeAsync(User, ProdePolicy.isAdmin)).Succeeded;
+
+            return Json(new UserInfo
+            {
+                Name = User.GetClaim<string>(ClaimType.Name),
+                Mail = User.GetClaim<string>(ClaimType.Mail),
+                HasPaid = User.GetClaim<Boolean>(ClaimType.HasPaid),
+                IsAdmin = isAdmin,
+                Id = User.GetClaim<int>(ClaimType.Id)
+            });
+        }
+
     }
 }

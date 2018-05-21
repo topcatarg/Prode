@@ -57,6 +57,7 @@
 <script lang="ts">
 import Axios from 'axios';
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import store from '../store';
 
 @Component
 export default class Login extends Vue {
@@ -72,7 +73,11 @@ export default class Login extends Vue {
             name: this.user,
             password: this.password
         })
-        .then(data => this.logueado = 'si')
+        .then(data => {
+                this.logueado = 'si';
+                store.dispatch('GetUserData');
+                }
+            )
         .catch(data => this.logueado = 'no');
         // console.log('pase');
     }
