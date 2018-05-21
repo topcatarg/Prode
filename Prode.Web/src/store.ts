@@ -14,8 +14,10 @@ export default new Vuex.Store<ProfileState> ({
   state: OriginalState,
   actions: {
     GetUserData(context) {
-      Axios.post(process.env.VUE_APP_BASE_URI + 'me')
-      .then(data => context.commit('ChangeUser', this.data))
+      Axios.post(process.env.VUE_APP_BASE_URI + 'me', { }, {withCredentials: true})
+      .then(data => {
+        context.commit('ChangeUser', data.data);
+      })
       .catch();
     }
   },

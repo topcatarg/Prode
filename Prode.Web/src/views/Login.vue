@@ -72,6 +72,9 @@ export default class Login extends Vue {
         Axios.post(process.env.VUE_APP_BASE_URI + 'login', {
             name: this.user,
             password: this.password
+        },
+        {
+            withCredentials: true
         })
         .then(data => {
                 this.logueado = 'si';

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Prode.API.Helpers;
 using Prode.API.Services;
 using StackExchange.Profiling;
 using Swashbuckle.AspNetCore.Swagger;
@@ -40,7 +41,11 @@ namespace Prode.API
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(o =>
             {
-                o.Cookie.Path = "/app";
+                o.Cookie.Path = "/api";
+                o.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+                o.Cookie.MaxAge = new TimeSpan(1, 0, 0, 0);
+                o.Cookie.Name = "TEST!";
+
                 o.Events.OnRedirectToLogin = context =>
                 {
                     context.Response.StatusCode = 401;
@@ -53,12 +58,12 @@ namespace Prode.API
                 };
             });
 
-            //services.AddAuthorization(options =>
-            //{
-            //    options.AddPolicy(TraducirPolicy.CanSuggest, policy => policy.RequireClaim(ClaimType.CanSuggest));
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(ProdePolicy.IsAdmin, policy => policy.RequireClaim(ClaimType.IsAdmin));
             //    options.AddPolicy(TraducirPolicy.CanReview, policy => policy.RequireClaim(ClaimType.CanReview));
             //    options.AddPolicy(TraducirPolicy.CanManageUsers, policy => policy.RequireClaim(ClaimType.IsModerator));
-            //});
+            });
 
             services.AddExceptional(settings =>
             {
@@ -66,10 +71,10 @@ namespace Prode.API
                 settings.OnBeforeLog += (sender, args) =>
                 {
                     var match = Regex.Match(args.Error.FullUrl, "^(([^/]+)//([^/]+))/", RegexOptions.Compiled);
-                    var miniProfilerUrl = match.Groups[1].Value + "/app/mini-profiler-resources/results?id=" + MiniProfiler.Current.Id.ToString();
+                    //var miniProfilerUrl = match.Groups[1].Value + "/app/mini-profiler-resources/results?id=" + MiniProfiler.Current.Id.ToString();
 
                     args.Error.CustomData = args.Error.CustomData ?? new Dictionary<string, string>();
-                    args.Error.CustomData.Add("MiniProfiler", miniProfilerUrl);
+                    //args.Error.CustomData.Add("MiniProfiler", miniProfilerUrl);
                 };
                 settings.LogFilters.Cookie[".AspNetCore.Cookies"] = "hidden";
             });
@@ -87,7 +92,7 @@ namespace Prode.API
             app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().AllowAnyOrigin());
 
             app.UseAuthentication();
-            app.UseMiniProfiler();
+            //app.UseMiniProfiler();
             app.UseExceptional();
 
             app.UseCookiePolicy(new CookiePolicyOptions

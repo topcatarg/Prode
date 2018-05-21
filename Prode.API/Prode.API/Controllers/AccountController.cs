@@ -62,9 +62,13 @@ namespace Prode.API.Controllers
                 new Claim(ClaimType.Id, user.Id.ToString(CultureInfo.InvariantCulture)),
                 new Claim(ClaimType.Name, user.Name),
                 new Claim(ClaimType.Mail, user.Mail),
-                new Claim(ClaimType.HasPaid, false.ToString()),
-                new Claim(ClaimType.IsAdmin, false.ToString())
+                new Claim(ClaimType.HasPaid, false.ToString())
             };
+
+            if (user.IsAdmin)
+            {
+                claims.Add(new Claim(ClaimType.IsAdmin, "1"));
+            }
 
             var identity = new ClaimsIdentity(claims, "login");
 
@@ -108,16 +112,27 @@ namespace Prode.API.Controllers
         [Route("api/me")]
         public async Task<IActionResult> WhoAmI()
         {
-            var isAdmin = (await _authorizationService.AuthorizeAsync(User, ProdePolicy.isAdmin)).Succeeded;
+            var isAdmin = (await _authorizationService.AuthorizeAsync(User, ProdePolicy.IsAdmin)).Succeeded;
 
-            return Json(new UserInfo
+            var v = new UserInfo
             {
                 Name = User.GetClaim<string>(ClaimType.Name),
                 Mail = User.GetClaim<string>(ClaimType.Mail),
                 HasPaid = User.GetClaim<Boolean>(ClaimType.HasPaid),
                 IsAdmin = isAdmin,
                 Id = User.GetClaim<int>(ClaimType.Id)
-            });
+            };
+
+            return new OkObjectResult(v);
+
+            //return Json(new UserInfo
+            //{
+            //    Name = User.GetClaim<string>(ClaimType.Name),
+            //    Mail = User.GetClaim<string>(ClaimType.Mail),
+            //    HasPaid = User.GetClaim<Boolean>(ClaimType.HasPaid),
+            //    IsAdmin = isAdmin,
+            //    Id = User.GetClaim<int>(ClaimType.Id)
+            //});
         }
 
     }

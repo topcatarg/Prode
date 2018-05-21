@@ -7,6 +7,6 @@ namespace Prode.API.Helpers
 {
     public static class ProdePolicy
     {
-        public const string isAdmin = nameof(isAdmin);
+        public const string IsAdmin = nameof(IsAdmin);
     }
 }
