@@ -102,6 +102,7 @@ namespace Prode.API.Controllers
             }
         }
 
+        [HttpPost]
         [Route("api/logout")]
         public async Task<IActionResult> LogOut(string returnUrl = null)
         {
@@ -109,6 +110,7 @@ namespace Prode.API.Controllers
             return Redirect(returnUrl ?? "/");
         }
 
+        [HttpPost]
         [Authorize]
         [Route("api/me")]
         public async Task<IActionResult> WhoAmI()
@@ -136,7 +138,8 @@ namespace Prode.API.Controllers
             //});
         }
 
-        [Route("apip/admin/errors/{path?}/{subPath?}")]
+        [HttpGet]
+        [Route("api/admin/errors/{path?}/{subPath?}")]
         public async Task Exceptions() => await ExceptionalMiddleware.HandleRequestAsync(HttpContext);
 
     }
