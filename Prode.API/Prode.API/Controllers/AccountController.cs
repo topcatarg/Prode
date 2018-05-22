@@ -13,6 +13,7 @@ using Prode.API.Services;
 using Prode.API.Models.Enums;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
+using StackExchange.Exceptional;
 
 namespace Prode.API.Controllers
 {
@@ -134,6 +135,9 @@ namespace Prode.API.Controllers
             //    Id = User.GetClaim<int>(ClaimType.Id)
             //});
         }
+
+        [Route("apip/admin/errors/{path?}/{subPath?}")]
+        public async Task Exceptions() => await ExceptionalMiddleware.HandleRequestAsync(HttpContext);
 
     }
 }
