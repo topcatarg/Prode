@@ -89,7 +89,10 @@ namespace Prode.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().AllowAnyOrigin());
+            app.UseCors(builder => builder.AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials()
+            .WithOrigins("https://prodemundial.netlify.com:80"));
 
             app.UseAuthentication();
             //app.UseMiniProfiler();

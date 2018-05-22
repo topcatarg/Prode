@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System.Data.SQLite;
+//using System.Data.SQLite;
+using Microsoft.Data.Sqlite;
 //using StackExchange.Profiling.Data;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace Prode.API.Services
 {
     public interface IDbService
     {
-       SQLiteConnection  SimpleDbConnection();
+        SqliteConnection SimpleDbConnection();
     }
 
     public class DbService: IDbService
@@ -23,10 +24,10 @@ namespace Prode.API.Services
             get { return Environment.CurrentDirectory + "\\prode.sqlite"; }
         }
 
-        public SQLiteConnection SimpleDbConnection()
+        public SqliteConnection SimpleDbConnection()
         {
             //var v = new SQLiteConnection();
-            return new SQLiteConnection("Data Source=" + DbFile);
+            return new SqliteConnection("Data Source=" + DbFile);
         }
 
         public DbService(IConfiguration configuration)
