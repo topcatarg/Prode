@@ -21,7 +21,7 @@ namespace Prode.API.Services
 
         public MailServices(string key)
         {
-            ApiKey = "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";
+            ApiKey = "";
         }
 
         public async void SendMail(string MailTo)
