@@ -38,6 +38,9 @@ namespace Prode.API
 
             services.AddSingleton(typeof(IDbService), typeof(DbService));
             services.AddSingleton(typeof(IUserService), typeof(UserService));
+            string api = Configuration.GetValue<string>("APIKEY");
+            services.AddSingleton<IMailServices>(p => new MailServices(api));
+            //services.AddSingleton(typeof(IMailServices), typeof(MailServices));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(o =>
             {

@@ -15,6 +15,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using StackExchange.Exceptional;
 
+
 namespace Prode.API.Controllers
 {
     public class AccountController : Controller
@@ -24,18 +25,21 @@ namespace Prode.API.Controllers
         //private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IMailServices _mailService;
 
         public AccountController(
             //IConfiguration configuration,
             //ISEApiService seApiService,
             IUserService userService,
-            IAuthorizationService authorizationService
+            IAuthorizationService authorizationService,
+            IMailServices mailService
             )
         {
             //_seApiService = seApiService;
             //_configuration = configuration;
             _userService = userService;
             _authorizationService = authorizationService;
+            _mailService = mailService;
         }
 
         public IActionResult Index()
@@ -55,7 +59,7 @@ namespace Prode.API.Controllers
             }
 
             //Me devuelve un token
-            var accessToken = "tokenvalido";
+            //var accessToken = "tokenvalido";
 
             //Genero las claims. Si pago, no pago, o si es admin!
             var claims = new List<Claim>
@@ -94,6 +98,7 @@ namespace Prode.API.Controllers
             var success = await _userService.CreateUserAsync(user.Name, user.Password, user.Mail);
             if (success)
             {
+                _mailService.SendMail(user.Mail);
                 return new OkResult();
             }
             else
@@ -141,6 +146,8 @@ namespace Prode.API.Controllers
         [HttpGet]
         [Route("api/admin/errors/{path?}/{subPath?}")]
         public async Task Exceptions() => await ExceptionalMiddleware.HandleRequestAsync(HttpContext);
+
+
 
     }
 }
