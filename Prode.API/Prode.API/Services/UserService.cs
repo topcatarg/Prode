@@ -14,6 +14,10 @@ namespace Prode.API.Services
         Task<UserInfo> LoginUserAsync(string user, string password);
 
         Task<bool> CreateUserAsync(string user, string password, string mail);
+
+        Task<bool> UserExists(string user);
+
+        Task<bool> MailExists(string mail);
     }
 
     public class UserService: IUserService
@@ -56,6 +60,38 @@ Values(@name,@password,@mail)", new
                 {
                     name = user,
                     password,
+                    mail
+                });
+            }
+            return (v > 0);
+        }
+
+        public async Task<bool> UserExists(string user)
+        {
+            int v;
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                v = await db.ExecuteScalarAsync<int>(@"
+Select count(*)
+From Users
+Where Name=@name", new
+                {
+                    name = user
+                });
+            }
+            return (v > 0);
+        }
+
+        public async Task<bool> MailExists(string mail)
+        {
+            int v;
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                v = await db.ExecuteScalarAsync<int>(@"
+Select count(*)
+From Users
+Where Mail=@mail", new
+                {
                     mail
                 });
             }

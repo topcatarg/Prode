@@ -95,6 +95,17 @@ namespace Prode.API.Controllers
             {
                 return BadRequest(CreateUserResult.BadParameters);
             }
+            //Check unique user and mail, better with unique in database
+            var result = await _userService.UserExists(user.Name);
+            if (result)
+            {
+                return BadRequest(CreateUserResult.UserAlreadyExist);
+            }
+            result = await _userService.MailExists(user.Mail);
+            if (result)
+            {
+                return BadRequest(CreateUserResult.MailAlreadyExist);
+            }
             var success = await _userService.CreateUserAsync(user.Name, user.Password, user.Mail);
             if (success)
             {

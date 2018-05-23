@@ -20,6 +20,10 @@ import World from './World'
 // to make props types inferable.
 const AppProps = Vue.extend({
   props: {
+    exampleProperty: {
+      type: String,
+      default: 'Example'
+    }
     propMessage: String
   }
 })

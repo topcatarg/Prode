@@ -1,65 +1,52 @@
 <template>
     <div>
-        <b-container class="bv-example-row">
-            <b-row>
-                <b-col>
-                    Usuario existente:
-                    <b-form-input 
-                    v-model="user"/>
-                    Password:
-        <b-form-input 
-            placeholder="Enter password" 
-            type="password"
-            v-model="password"/>
-        <b-button @click="Login">
-            Ingresar
-        </b-button>
-        {{this.logueado}}
-                </b-col>
-                <b-col>
-                    Nuevo Usuario
-                    <b-row>
-                        <b-col>
-                            Nombre: 
-                        </b-col>
-                        <b-col>
-                            <b-form-input v-model="newuser" required/>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            Direccion de correo:
-                        </b-col>
-                        <b-col>
-                            <b-form-input type="email" v-model="mail" required/>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            Password:
-                        </b-col>
-                        <b-col>
-                            <b-form-input placeholder="Enter password" type="password" v-model="newpassword" required/>
-                        </b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col>
-                            <b-button @click="Create"> 
-                                Crear Usuario
-                            </b-button>
-                        </b-col>
-                    </b-row>
-                </b-col>
-        </b-row>
-        </b-container>
+        <b-tabs>
+            <b-tab title="Ingresar" active>
+                Usuario existente:
+                <b-form-input v-model="user" required/>
+                Password:
+                <b-form-input placeholder="Enter password" type="password" v-model="password" required/>
+                <b-button @click="Login">
+                    Ingresar 
+                </b-button>
+            </b-tab>
+            <b-tab title="Crear Usuario">
+                Nombre: 
+                <b-form-input v-model="newuser" required/>
+                Direccion de correo:
+                <b-form-input type="email" v-model="mail" required/>
+                Password:
+                <b-form-input placeholder="Enter password" type="password" v-model="newpassword" required/>
+                <b-button @click="Create"> 
+                    Crear Usuario
+                </b-button>
+                <ErrorAlert />
+            </b-tab>
+            <b-tab title="Recuperar Password">
+                Direccion de correo:
+                <b-form-input type="email" v-model="remail" required/>
+                <b-button @click="RecoverPassword"> 
+                    Recuperar Password
+                </b-button>
+            </b-tab>
+        </b-tabs>
+        <ErrorAlert :message=this.errorAlCrear />
+        {{this.errorAlCrear}}
     </div>
 </template>
+
 <script lang="ts">
 import Axios from 'axios';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import ErrorAlert from '../components/ErrorAlert.vue';
+import { CreateUserResult } from '../enums/CreateUserResult';
 import store from '../store';
 
-@Component
+@Component({
+  components: {
+    ErrorAlert
+  }
+})
 export default class Login extends Vue {
     private user: string = '';
     private newuser: string = '';
@@ -67,6 +54,8 @@ export default class Login extends Vue {
     private newpassword: string = '';
     private logueado: string = 'nose';
     private mail: string = '';
+    private remail: string = '';
+    private errorAlCrear: string = '';
     private Login() {
         // console.log(this.user);
         Axios.post(process.env.VUE_APP_BASE_URI + 'login', {
@@ -85,6 +74,7 @@ export default class Login extends Vue {
         // console.log('pase');
     }
     private Create() {
+        this.errorAlCrear = '';
         Axios.post(process.env.VUE_APP_BASE_URI + 'create',
         {
             name: this.newuser,
@@ -92,7 +82,33 @@ export default class Login extends Vue {
             mail: this.mail
         })
         .then(data => this.logueado = 'Creado')
-        .catch(data => this.logueado = 'Parametros vacios');
+        .catch(error => {
+            switch (error.response.data) {
+                case CreateUserResult.BadParameters: {
+                    this.errorAlCrear = 'parametros incompletos';
+                    break;
+                }
+                case CreateUserResult.ErrorOnDatabase: {
+                    this.errorAlCrear = 'Error de db';
+                    break;
+                }
+                case CreateUserResult.UserAlreadyExist: {
+                    this.errorAlCrear = 'ya existe usuario';
+                    break;
+                }
+                case CreateUserResult.MailAlreadyExist: {
+                    this.errorAlCrear = 'ya existe mail';
+                    break;
+                }
+                default: {
+                    this.errorAlCrear = 'error desconocido';
+                }
+            }
+        });
+    }
+
+    private RecoverPassword() {
+        this.errorAlCrear = '';
     }
 }
 </script>
