@@ -158,7 +158,12 @@ namespace Prode.API.Controllers
         [Route("api/admin/errors/{path?}/{subPath?}")]
         public async Task Exceptions() => await ExceptionalMiddleware.HandleRequestAsync(HttpContext);
 
-
+        [HttpGet]
+        [Route("api/getstandartime")]
+        public IActionResult GetStandarTime()
+        {
+            return new OkObjectResult(DateTime.UtcNow.AddMinutes(-160));
+        }
 
     }
 }

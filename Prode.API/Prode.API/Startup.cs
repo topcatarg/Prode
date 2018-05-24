@@ -41,6 +41,7 @@ namespace Prode.API
             string api = Configuration.GetValue<string>("APIKEY");
             services.AddSingleton<IMailServices>(p => new MailServices(api));
             services.AddSingleton(typeof(IFixtureService), typeof(FixtureService));
+            services.AddSingleton(typeof(IForecastService), typeof(ForecastService));
 
             //services.AddSingleton(typeof(IMailServices), typeof(MailServices));
 
