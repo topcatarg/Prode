@@ -40,6 +40,8 @@ namespace Prode.API
             services.AddSingleton(typeof(IUserService), typeof(UserService));
             string api = Configuration.GetValue<string>("APIKEY");
             services.AddSingleton<IMailServices>(p => new MailServices(api));
+            services.AddSingleton(typeof(IFixtureService), typeof(FixtureService));
+
             //services.AddSingleton(typeof(IMailServices), typeof(MailServices));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(o =>
@@ -95,7 +97,9 @@ namespace Prode.API
             app.UseCors(builder => builder.AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
-            .WithOrigins("https://prodemundial.netlify.com:80"));
+            .AllowAnyOrigin()
+            //.WithOrigins("https://prodemundial.netlify.com:80")
+            );
 
             app.UseAuthentication();
             //app.UseMiniProfiler();
