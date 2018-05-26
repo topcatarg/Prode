@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container">
         <b-form-select v-model="FilterValue" class="m-md-2">
             <option value="">Todos los grupos</option>
             <option value="A">A</option>

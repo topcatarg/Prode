@@ -162,7 +162,15 @@ namespace Prode.API.Controllers
         [Route("api/getstandartime")]
         public IActionResult GetStandarTime()
         {
-            return new OkObjectResult(DateTime.UtcNow.AddMinutes(-160));
+            return new OkObjectResult(DateTime.UtcNow.AddMinutes(-185));
+        }
+
+        [HttpGet]
+        [Route("api/recorverpassword")]
+        public async Task<IActionResult> RecoverPassword(string mail)
+        {
+            await _mailService.SendMail("gonzalo.bianchi@gmail.com");
+            return new OkResult();
         }
 
     }

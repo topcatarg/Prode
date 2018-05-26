@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container">
         <b-tabs>
             <b-tab title="Ingresar" active>
                 Usuario existente:
