@@ -13,11 +13,13 @@ namespace Prode.API.Services
     {
         Task<UserInfo> LoginUserAsync(string user, string password);
 
-        Task<bool> CreateUserAsync(string user, string password, string mail);
+        Task<bool> CreateUserAsync(string user, string password, string mail, string TeamName, int GameGroupId);
 
         Task<bool> UserExists(string user);
 
         Task<bool> MailExists(string mail);
+
+        Task<int> GroupExistAsync(string group);
     }
 
     public class UserService: IUserService
@@ -48,19 +50,41 @@ And   Password=@password", new
             return v;
         }
 
-        public async Task<bool> CreateUserAsync(string user, string password, string mail)
+        public async Task<bool> CreateUserAsync(string user, string password, string mail, string TeamName, int GameGroupId)
         {
             int v;
             using (var db = _dbService.SimpleDbConnection())
             {
                 v = await db.ExecuteAsync(@"
 Insert into Users
-(Name, Password, Mail)
-Values(@name,@password,@mail)", new
+(Name, Password, TeamName, Mail, GameGroupId)
+Values(@name,@password,@TeamName, @mail, @GameGroupId)", new
                 {
                     name = user,
                     password,
-                    mail
+                    mail,
+                    TeamName,
+                    GameGroupId
+                });
+                if (v == 0)
+                {
+                    return false;
+                }
+                //Get the user
+                var userId = await db.ExecuteScalarAsync<string>(@"
+Select ID
+From Users
+Where Name = @name", new
+                {
+                    name = user
+
+                });
+                v = await db.ExecuteAsync(@"
+insert into UserForecast (UserId,MatchId,Team1Goals,Team2Goals,ScorePerGame)
+select @userId,id,0,0,0
+from Matches", new
+                {
+                    userId
                 });
             }
             return (v > 0);
@@ -96,6 +120,20 @@ Where Mail=@mail", new
                 });
             }
             return (v > 0);
+        }
+
+        public async Task<int> GroupExistAsync(string group)
+        {
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                return await db.ExecuteScalarAsync<int>(@"
+Select count(*)
+From GameGroups
+Where GameGroup = @gamegroup", new
+                {
+                    gamegroup = group.Trim().ToLower()
+                });
+            }
         }
     }
 }

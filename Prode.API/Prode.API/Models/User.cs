@@ -13,11 +13,19 @@ namespace Prode.API.Models
 
         public string Password { get; set; }
 
+        public string TeamName {get; set;}
+
         public string Mail { get; set; }
 
         public bool HasPaid { get; set; }
 
         public bool IsAdmin { get; set; }
+
+        public int Score { get; set; }
+
+        public string GameGroupName { get; set; }
+
+        public int GameGroupId { get; set; }
 
     }
 }

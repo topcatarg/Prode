@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import Admin from './views/Admin.vue';
 import Forecast from './views/Forecast.vue';
 import Login from './views/Login.vue';
+import Logout from './views/Logout.vue';
 import Position from './views/Positions.vue';
 import Rules from './views/Rules.vue';
 import Schedule from './views/Schedule.vue';
@@ -12,12 +14,12 @@ Vue.use(Router);
 export default new Router({
   routes: [
     {
-      path: '/',
+      path: '/Posiciones',
       name: 'Posiciones',
       component: Position
     },
     {
-      path: '/Schedule',
+      path: '/',
       name: 'Calendario',
       component: Schedule
     },
@@ -40,6 +42,16 @@ export default new Router({
       path: '/Login',
       name: 'Logueo',
       component: Login
+    },
+    {
+      path: '/Admin',
+      name: 'Administrar',
+      component: Admin
+    },
+    {
+      path: '/Logout',
+      name: 'Logout',
+      component: Logout
     }
   ]
 });

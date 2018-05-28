@@ -85,45 +85,13 @@ namespace Prode.API.Controllers
 
             ////return Redirect(_seApiService.GetInitialOauthUrl(GetOauthReturnUrl(), returnUrl));
         }
-
-        [HttpPost]
-        [Route("api/create")]
-        public async Task<IActionResult> CreateUserAsync([FromBody] UserInfo user)
-        {
-            if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Password) 
-                || string.IsNullOrEmpty(user.Mail))
-            {
-                return BadRequest(CreateUserResult.BadParameters);
-            }
-            //Check unique user and mail, better with unique in database
-            var result = await _userService.UserExists(user.Name);
-            if (result)
-            {
-                return BadRequest(CreateUserResult.UserAlreadyExist);
-            }
-            result = await _userService.MailExists(user.Mail);
-            if (result)
-            {
-                return BadRequest(CreateUserResult.MailAlreadyExist);
-            }
-            var success = await _userService.CreateUserAsync(user.Name, user.Password, user.Mail);
-            if (success)
-            {
-                _mailService.SendMail(user.Mail);
-                return new OkResult();
-            }
-            else
-            {
-                return BadRequest(CreateUserResult.ErrorOnDatabase);
-            }
-        }
-
         [HttpPost]
         [Route("api/logout")]
         public async Task<IActionResult> LogOut(string returnUrl = null)
         {
             await HttpContext.SignOutAsync();
-            return Redirect(returnUrl ?? "/");
+            return new OkResult();
+            //return Redirect(returnUrl ?? "/");
         }
 
         [HttpPost]
@@ -143,15 +111,6 @@ namespace Prode.API.Controllers
             };
 
             return new OkObjectResult(v);
-
-            //return Json(new UserInfo
-            //{
-            //    Name = User.GetClaim<string>(ClaimType.Name),
-            //    Mail = User.GetClaim<string>(ClaimType.Mail),
-            //    HasPaid = User.GetClaim<Boolean>(ClaimType.HasPaid),
-            //    IsAdmin = isAdmin,
-            //    Id = User.GetClaim<int>(ClaimType.Id)
-            //});
         }
 
         [HttpGet]
@@ -162,16 +121,67 @@ namespace Prode.API.Controllers
         [Route("api/getstandartime")]
         public IActionResult GetStandarTime()
         {
-            return new OkObjectResult(DateTime.UtcNow.AddMinutes(-185));
+            return new OkObjectResult(DateTime.UtcNow.AddMinutes(-175));
         }
 
         [HttpGet]
         [Route("api/recorverpassword")]
         public async Task<IActionResult> RecoverPassword(string mail)
         {
-            await _mailService.SendMail("gonzalo.bianchi@gmail.com");
+            await _mailService.SendHelloMail(mail);
             return new OkResult();
         }
+        #region Create User
 
+        [HttpPost]
+        [Route("api/create")]
+        public async Task<IActionResult> CreateUserAsync([FromBody] UserInfo user)
+        {
+            if (string.IsNullOrEmpty(user.Name)
+                || string.IsNullOrEmpty(user.Password)
+                || string.IsNullOrEmpty(user.Mail)
+                || string.IsNullOrEmpty(user.TeamName)
+                || user.GameGroupId == 0)
+            {
+                return BadRequest(CreateUserResult.BadParameters);
+            }
+            //Check unique user and mail, better with unique in database
+            var result = await _userService.UserExists(user.Name);
+            if (result)
+            {
+                return BadRequest(CreateUserResult.UserAlreadyExist);
+            }
+            result = await _userService.MailExists(user.Mail);
+            if (result)
+            {
+                return BadRequest(CreateUserResult.MailAlreadyExist);
+            }
+            var success = await _userService.CreateUserAsync(user.Name, user.Password, user.Mail, user.TeamName, user.GameGroupId);
+            if (success)
+            {
+                await _mailService.SendHelloMail(user.Mail);
+                return new OkResult();
+            }
+            else
+            {
+                return BadRequest(CreateUserResult.ErrorOnDatabase);
+            }
+        }
+
+
+        [HttpGet]
+        [Route("api/ExistGroup")]
+        public async Task<IActionResult> ValidGroup(string group)
+        {
+            var v = await _userService.GroupExistAsync(group);
+            if (v > 0)
+            {
+                return new OkObjectResult(v);
+            }
+            return BadRequest();
+        }
+
+
+        #endregion
     }
 }

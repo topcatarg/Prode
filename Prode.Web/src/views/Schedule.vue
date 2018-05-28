@@ -49,7 +49,7 @@ export default class Schedule extends Vue {
         this.fields.push(new IFixtureTableFields('team1Name', 'Equipo'));
         this.fields.push(new IFixtureTableFields('Result', 'Resultado'));
         this.fields.push(new IFixtureTableFields('team2Name', 'Equipo'));
-        this.fields.push(new IFixtureTableFields('grupo', 'Grupo'));
+        this.fields.push(new IFixtureTableFields('wwGroup', 'Grupo'));
     }
 
     private mounted() {
@@ -65,7 +65,7 @@ export default class Schedule extends Vue {
         }
         this.filteredItems = [];
         this.items.forEach(element => {
-            if (element.grupo === this.FilterValue) {
+            if (element.wwGroup === this.FilterValue) {
                 this.filteredItems.push(element);
             }
         });

@@ -4,6 +4,7 @@ export interface IUserInfo {
     hasPaid: boolean;
     isAdmin: boolean;
     id?: number;
+    gameGroupId: number;
 }
 
 export interface ProfileState {

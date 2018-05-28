@@ -43,6 +43,7 @@ namespace Prode.API
             //services.AddSingleton<IMailServices>(p => new MailServices(api));
             services.AddSingleton(typeof(IFixtureService), typeof(FixtureService));
             services.AddSingleton(typeof(IForecastService), typeof(ForecastService));
+            services.AddSingleton(typeof(IResultService), typeof(ResultService));
 
             services.AddSingleton(typeof(IMailServices), typeof(MailServices));
 

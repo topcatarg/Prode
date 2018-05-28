@@ -2,7 +2,7 @@
     <div class="container">
         <b-container class="mt-2 mb-2">
             <b-row>
-                <b-col cols="8">
+                <b-col cols="4">
                     <b-form-select v-model="FilterValue">
                         <option value="">Todos los grupos</option>
                         <option value="A">A</option>
@@ -19,8 +19,13 @@
                         <option value="FINALES">FINALES</option>
                     </b-form-select>
                 </b-col>
+                <b-col cols="4">
+                    <b-form-checkbox v-model="OnlyAvailables" @change="filtrar">
+                        Ver solo los restantes
+                    </b-form-checkbox>
+                </b-col>
                 <b-col>
-                    <b-button variant="primary">
+                    <b-button variant="primary" @click="SaveAll">
                         Guardar todos los cambios
                     </b-button>
                 </b-col>
@@ -35,14 +40,14 @@
                 <b-container >
                     <b-row>
                         <b-col cols="5">
-                            <b-form-input type="number">
+                            <b-form-input type="number" v-model="data.item.team1Forecast">
                             </b-form-input>
                         </b-col>
                         <b-col cols="2">
                             -
                         </b-col>
                         <b-col cols="5">
-                            <b-form-input type="number">
+                            <b-form-input type="number" v-model="data.item.team2Forecast">
                             </b-form-input>
                         </b-col>
                     </b-row>
@@ -53,7 +58,9 @@
                 {{data.item.team2Name}}
             </template>
             <template slot="actions" slot-scope="data">
-                <b-button size="sm" variant="primary">
+                <b-button size="sm" variant="primary" 
+                    @click="StoreRow(data.item.id, data.item.team1Forecast, data.item.team2Forecast)"
+                    v-if="data.item.canUpdate">
                     Guardar este resultado
                 </b-button>
             </template>
@@ -64,16 +71,19 @@
 <script lang="ts">
 import Axios from 'axios';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import IFixtureData from '../helpers/FixtureData';
 import IFixtureTableData from '../helpers/FixtureTableData';
 import IFixtureTableFields from '../helpers/FixtureTableFields';
+import IMatchData from '../helpers/MatchData';
 
 @Component
 export default class Forecast extends Vue {
     private fields: IFixtureTableFields[] = [];
-    private items: IFixtureTableData[] = [];
-    private filteredItems: IFixtureTableData[] = this.items;
+    private items: IFixtureData[] = [];
+    private filteredItems: IFixtureData[] = this.items;
     private FilterValue: string = '';
     private CurrentTime?: Date = undefined;
+    private OnlyAvailables: boolean = false;
 
     constructor() {
         super();
@@ -81,29 +91,64 @@ export default class Forecast extends Vue {
         this.fields.push(new IFixtureTableFields('team1Name', 'Equipo'));
         this.fields.push(new IFixtureTableFields('Result', 'Resultado'));
         this.fields.push(new IFixtureTableFields('team2Name', 'Equipo'));
-        this.fields.push(new IFixtureTableFields('grupo', 'Grupo'));
+        this.fields.push(new IFixtureTableFields('wwGroup', 'Grupo'));
         this.fields.push(new IFixtureTableFields('actions', ''));
     }
 
     private mounted() {
         Axios.get(process.env.VUE_APP_BASE_URI + 'getstandartime')
         .then(Response => this.CurrentTime = Response.data);
-        Axios.get(process.env.VUE_APP_BASE_URI + 'fixture/allmatchs')
+        Axios.get(process.env.VUE_APP_BASE_URI + 'forecast/my?UserId=' + this.ComputedUserId, {withCredentials: true})
         .then(Response => this.items = this.filteredItems = Response.data);
+    }
+
+    get ComputedUserId(): number {
+        return this.$store.getters.UserId;
+    }
+
+    private StoreRow(id: number, goals1: number, goals2: number) {
+        Axios.post(process.env.VUE_APP_BASE_URI + 'forecast/fillgame',
+        {
+            MatchId : id,
+            UserId : this.ComputedUserId,
+            Team1Forecast: goals1,
+            Team2Forecast: goals2
+        }, {withCredentials: true});
+    }
+
+    private SaveAll() {
+        const v: IMatchData[] = [];
+        this.items.forEach(t => {
+            if (t.canUpdate) {
+                const m: IMatchData = {
+                    MatchId: t.id,
+                    UserId: this.ComputedUserId,
+                    Team1Forecast: t.team1Forecast === undefined ? 0 : t.team1Forecast,
+                    Team2Forecast: t.team2Forecast === undefined ? 0 : t.team2Forecast
+                };
+                v.push(m);
+            }
+        });
+        Axios.post(process.env.VUE_APP_BASE_URI + 'forecast/fillall',
+        v,
+        {withCredentials: true});
     }
 
     @Watch('FilterValue')
     private filtrar() {
         if (this.FilterValue === '') {
-            this.filteredItems = this.items;
-            return;
-        }
-        this.filteredItems = [];
-        this.items.forEach(element => {
-            if (element.grupo === this.FilterValue) {
-                this.filteredItems.push(element);
+            if (!this.OnlyAvailables) {
+                this.filteredItems = this.items.filter(i => i.canUpdate);
+            } else {
+                this.filteredItems = this.items;
             }
-        });
+        } else {
+            if (!this.OnlyAvailables) {
+                this.filteredItems = this.items.filter(i => i.canUpdate && i.wwGroup === this.FilterValue);
+            } else {
+                this.filteredItems = this.items.filter(i => i.wwGroup === this.FilterValue);
+            }
+        }
     }
 }
 </script>
