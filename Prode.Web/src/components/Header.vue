@@ -7,7 +7,7 @@
         <b-collapse is-nav id="nav_collapse">
           <b-navbar-nav class="ml-auto">
             <b-nav-item to="/Posiciones" v-if="ComputedUserName !== ''">Posiciones</b-nav-item>
-            <b-nav-item to="/">Calendario</b-nav-item>
+            <b-nav-item to="/" exact>Calendario</b-nav-item>
             <b-nav-item to="/Forecast" v-if="ComputedUserName !== ''">Pronosticos</b-nav-item>
             <b-nav-item to="/Rules">Reglas</b-nav-item>
             <b-nav-item to="/Login" v-if="ComputedUserName === ''">Entrar</b-nav-item>

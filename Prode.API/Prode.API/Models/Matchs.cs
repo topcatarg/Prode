@@ -22,5 +22,6 @@ namespace Prode.API.Models
         public int? Team2Forecast { get; set; }
         public int Points { get; set; }
         public bool CanUpdate { get; set; } = false;
+        public bool Closed { get; set; }
     }
 }

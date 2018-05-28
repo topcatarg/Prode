@@ -44,7 +44,7 @@ namespace Prode.API
             services.AddSingleton(typeof(IFixtureService), typeof(FixtureService));
             services.AddSingleton(typeof(IForecastService), typeof(ForecastService));
             services.AddSingleton(typeof(IResultService), typeof(ResultService));
-
+            services.AddSingleton(typeof(IAdminService), typeof(AdminService));
             services.AddSingleton(typeof(IMailServices), typeof(MailServices));
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(o =>

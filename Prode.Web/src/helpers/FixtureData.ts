@@ -14,4 +14,5 @@ export default interface IFixtureData {
      team2Forecast?: number;
      points: number;
      canUpdate: boolean;
+     closed: boolean;
 }

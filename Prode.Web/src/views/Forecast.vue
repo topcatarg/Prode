@@ -21,12 +21,17 @@
                 </b-col>
                 <b-col cols="4">
                     <b-form-checkbox v-model="OnlyAvailables" @change="filtrar">
-                        Ver solo los restantes
+                        Ver solo los partidos restantes
                     </b-form-checkbox>
                 </b-col>
                 <b-col>
-                    <b-button variant="primary" @click="SaveAll">
-                        Guardar todos los cambios
+                    <b-button variant="primary" @click="SaveAll" :disabled="ButtonOcupied">
+                        <div v-if="!ButtonOcupied">
+                            Guardar todos los cambios
+                        </div>
+                        <div v-else-if="ButtonOcupied">
+                            <i class="fa fa-cog fa-spin fa-fw"></i>
+                        </div>
                     </b-button>
                 </b-col>
             </b-row>
@@ -60,8 +65,15 @@
             <template slot="actions" slot-scope="data">
                 <b-button size="sm" variant="primary" 
                     @click="StoreRow(data.item.id, data.item.team1Forecast, data.item.team2Forecast)"
-                    v-if="data.item.canUpdate">
-                    Guardar este resultado
+                    v-if="data.item.canUpdate"
+                    :disabled="ButtonOcupied"
+                    >
+                    <div v-if="!ButtonOcupied">
+                            Guardar todos los cambios
+                        </div>
+                        <div v-else-if="ButtonOcupied">
+                            <i class="fa fa-cog fa-spin fa-fw"></i>
+                    </div>
                 </b-button>
             </template>
         </b-table>
@@ -84,6 +96,7 @@ export default class Forecast extends Vue {
     private FilterValue: string = '';
     private CurrentTime?: Date = undefined;
     private OnlyAvailables: boolean = false;
+    private ButtonOcupied: boolean = false;
 
     constructor() {
         super();
@@ -107,16 +120,19 @@ export default class Forecast extends Vue {
     }
 
     private StoreRow(id: number, goals1: number, goals2: number) {
+        this.ButtonOcupied = true;
         Axios.post(process.env.VUE_APP_BASE_URI + 'forecast/fillgame',
         {
             MatchId : id,
             UserId : this.ComputedUserId,
             Team1Forecast: goals1,
             Team2Forecast: goals2
-        }, {withCredentials: true});
+        }, {withCredentials: true})
+        .then(response => this.ButtonOcupied = false);
     }
 
     private SaveAll() {
+        this.ButtonOcupied = true;
         const v: IMatchData[] = [];
         this.items.forEach(t => {
             if (t.canUpdate) {
@@ -131,7 +147,8 @@ export default class Forecast extends Vue {
         });
         Axios.post(process.env.VUE_APP_BASE_URI + 'forecast/fillall',
         v,
-        {withCredentials: true});
+        {withCredentials: true})
+        .then(response => this.ButtonOcupied = false);
     }
 
     @Watch('FilterValue')

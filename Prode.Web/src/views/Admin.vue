@@ -1,24 +1,36 @@
 <template>
     <div class="container">
-        admin
+        <b-tabs class="mt-2">
+            <b-tab title="Partidos" active>
+                <AdminMatchsButtons class="mt-2"/>
+                <AdminMatchs class="mt-2"/>
+            </b-tab>
+            <b-tab title="Usuarios">
+                <AdminUserButtons class="mt-2"/>
+                <AdminUserList class="mt-2"/>
+            </b-tab>
+        </b-tabs>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import AdminMatchs from '../components/AdminMatchs.vue';
+import AdminMatchsButtons from '../components/AdminMatchsButtons.vue';
+import AdminUserButtons from '../components/AdminUserButtons.vue';
+import AdminUserList from '../components/AdminUserLists.vue';
 
-@Component
+@Component ({
+  components: {
+    AdminMatchsButtons,
+    AdminMatchs,
+    AdminUserButtons,
+    AdminUserList
+  }
+})
 export default class Admin extends Vue {
     private mounted() {
-        if (this.$store.state === undefined) {
-            this.$router.push('/');
-            return;
-        }
-        if (this.$store.state.user === undefined) {
-            this.$router.push('/');
-            return;
-        }
-        if (!this.$store.state.user.IsAdmin) {
+        if (!this.$store.getters.IsAdmin) {
             this.$router.push('/');
             return;
         }
