@@ -49,5 +49,12 @@ namespace Prode.API.Controllers
             return new OkObjectResult(await _adminService.UpdateGame(Match));
         }
 
+        [HttpPost]
+        [Authorize(Policy = ProdePolicy.IsAdmin)]
+        [Route("api/admin/UpdatePoints")]
+        public async Task<IActionResult> UpdateScores()
+        {
+            return new OkObjectResult(await _adminService.UpdateScores());
+        }
     }
 }

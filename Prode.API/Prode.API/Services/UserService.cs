@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Configuration;
 using Prode.API.Models;
 
 namespace Prode.API.Services
@@ -34,6 +37,7 @@ namespace Prode.API.Services
 
         public async Task<UserInfo> LoginUserAsync(string user, string password)
         {
+            string newpass = EncryptPassword(password);
             UserInfo v;
             using (var db = _dbService.SimpleDbConnection())
             {
@@ -44,7 +48,7 @@ Where Name=@name
 And   Password=@password", new
                 {
                     name = user,
-                    password
+                    password = newpass
                 });
             }
             return v;
@@ -52,6 +56,8 @@ And   Password=@password", new
 
         public async Task<bool> CreateUserAsync(string user, string password, string mail, string TeamName, int GameGroupId)
         {
+            //Encripto el pass
+            string newpass = EncryptPassword(password);
             int v;
             using (var db = _dbService.SimpleDbConnection())
             {
@@ -61,7 +67,7 @@ Insert into Users
 Values(@name,@password,@TeamName, @mail, @GameGroupId)", new
                 {
                     name = user,
-                    password,
+                    password = newpass,
                     mail,
                     TeamName,
                     GameGroupId
@@ -134,6 +140,14 @@ Where GameGroup = @gamegroup", new
                     gamegroup = group.Trim().ToLower()
                 });
             }
+        }
+
+        private string EncryptPassword(string pass)
+        {
+            byte[] data = Encoding.UTF8.GetBytes(pass);
+            SHA512 shaM = new SHA512Managed();
+            byte[] resul = shaM.ComputeHash(data);
+            return Encoding.UTF8.GetString(resul);
         }
     }
 }

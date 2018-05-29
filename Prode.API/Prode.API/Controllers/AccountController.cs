@@ -124,13 +124,21 @@ namespace Prode.API.Controllers
             return new OkObjectResult(DateTime.UtcNow.AddMinutes(-175));
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("api/recorverpassword")]
         public async Task<IActionResult> RecoverPassword(string mail)
         {
-            await _mailService.SendHelloMail(mail);
+            //Check if the mail exists
+            if (!await _userService.MailExists(mail))
+            {
+                return BadRequest();
+            }
+            //Create GUID
+            Guid guid = Guid.NewGuid();
+            await _mailService.SendRecoverPassword(mail,guid);
             return new OkResult();
         }
+
         #region Create User
 
         [HttpPost]

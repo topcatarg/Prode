@@ -14,6 +14,8 @@ namespace Prode.API.Services
     public interface IMailServices
     {
         Task<HttpStatusCode> SendHelloMail(string MailTo);
+
+        Task<HttpStatusCode> SendRecoverPassword(string mail, Guid guid);
     }
 
     public class MailServices: IMailServices
@@ -26,7 +28,7 @@ namespace Prode.API.Services
         public MailServices(IConfiguration configuration)
         {
             _configuration = configuration;
-            ApiKey = _configuration.GetValue<string>("APIKEY"); ;
+            ApiKey = _configuration.GetValue<string>("APIKEY");
         }
 
         public async Task<HttpStatusCode> SendHelloMail(string MailTo)
@@ -43,6 +45,23 @@ Por favor, presione sobre el siguiente link para comprobar el mail, y asi poder 
 
 (Luego del mundial, la base va a ser borrada, asi que olvidense de recibir mas mails).
 "
+            };
+            msg.AddTo(new EmailAddress(MailTo));
+            var response = await client.SendEmailAsync(msg);
+            return response.StatusCode;
+        }
+
+        public async Task<HttpStatusCode> SendRecoverPassword(string MailTo, Guid guid)
+        {
+            var client = new SendGridClient(ApiKey);
+            var msg = new SendGridMessage()
+            {
+                From = new EmailAddress(FromAddres, FromName),
+                Subject = "Recuperar password de prode mundial!",
+                PlainTextContent = $@"
+Si perdiste la password, presiona el siguiente link (o copialo):
+
+https://prodemundial.netlify.com/#/recoverpass?code={guid}"
             };
             msg.AddTo(new EmailAddress(MailTo));
             var response = await client.SendEmailAsync(msg);
