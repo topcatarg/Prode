@@ -23,6 +23,10 @@ namespace Prode.API.Services
         Task<bool> MailExists(string mail);
 
         Task<int> GroupExistAsync(string group);
+
+        Task<bool> StoreGuidRecovery(Guid guid, string mail);
+
+        Task<bool> ChangePasswordAfterLost(string pass, string guid);
     }
 
     public class UserService: IUserService
@@ -142,6 +146,71 @@ Where GameGroup = @gamegroup", new
             }
         }
 
+        public async Task<bool> StoreGuidRecovery(Guid guid, string mail)
+        {
+            int userid = await GetUserIdFromMail(mail);
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                return (await db.ExecuteAsync(@"
+Delete from PassRecovery
+where UserId = @userid;
+
+Insert into PassRecovery (GUID, UserId)
+Values (@guid, @userid);", new
+                {
+                    userid,
+                    guid = guid.ToString()
+                }) > 0);
+            }
+        }
+
+        public async Task<bool> ChangePasswordAfterLost(string pass, string guid)
+        {
+            string newpass = EncryptPassword(pass);
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                //get user from guid
+                int userid = await db.ExecuteScalarAsync<int>(@"
+Select UserId
+From PassRecovery
+Where GUID = @guid", new
+                {
+                    guid
+                });
+                if (userid == 0)
+                {
+                    return false;
+                }
+                return (await db.ExecuteAsync(@"
+Update Users
+set Password = @newpass
+Where ID = @userid;
+
+Delete From PassRecovery
+Where UserId = @userid;", new
+                {
+                    newpass,
+                    userid
+                }) > 0);
+            }
+        }
+
+        #region Private methods
+
+        private async Task<int> GetUserIdFromMail(string mail)
+        {
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                return await db.ExecuteScalarAsync<int>(@"
+Select ID 
+From Users
+Where Mail = @mail", new
+                {
+                    mail
+                });
+            }
+        }
+
         private string EncryptPassword(string pass)
         {
             byte[] data = Encoding.UTF8.GetBytes(pass);
@@ -149,5 +218,7 @@ Where GameGroup = @gamegroup", new
             byte[] resul = shaM.ComputeHash(data);
             return Encoding.UTF8.GetString(resul);
         }
+
+        #endregion
     }
 }

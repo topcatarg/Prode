@@ -36,7 +36,13 @@
                 </b-col>
             </b-row>
         </b-container>
-        <b-table striped hover :items="filteredItems" :fields="fields" class="ml-2 mr-2">
+        <b-table striped hover stacked="md" :items="filteredItems" :fields="fields" class="ml-2 mr-2">
+            <template slot="wwGroup" slot-scope="data">
+                {{data.item.wwGroup}}
+            </template>
+            <template slot="date" slot-scope="data">
+                {{data.item.date}}
+            </template>
             <template slot="team1Name" slot-scope="data">
                 <b-img v-if="data.item.team1Flag!=null" :src="'http://www.countryflags.io/'+ data.item.team1Flag +'/shiny/24.png'" />
                 {{data.item.team1Name}}
@@ -44,16 +50,14 @@
             <template slot="Result" slot-scope="data">
                 <b-container >
                     <b-row>
-                        <b-col cols="5">
-                            <b-form-input type="number" v-model="data.item.team1Forecast">
-                            </b-form-input>
+                        <b-col cols="5.5" class="m-0 p-0">
+                            <b-form-select v-model="data.item.team1Forecast" :options="options" />
                         </b-col>
-                        <b-col cols="2">
+                        <b-col cols="1" class="m-0 p-0">
                             -
                         </b-col>
-                        <b-col cols="5">
-                            <b-form-input type="number" v-model="data.item.team2Forecast">
-                            </b-form-input>
+                        <b-col cols="5.5" class="m-0 p-0">
+                            <b-form-select v-model="data.item.team2Forecast" :options="options" />
                         </b-col>
                     </b-row>
                 </b-container>
@@ -69,7 +73,7 @@
                     :disabled="ButtonOcupied"
                     >
                     <div v-if="!ButtonOcupied">
-                            Guardar todos los cambios
+                            Guardar esta fila
                         </div>
                         <div v-else-if="ButtonOcupied">
                             <i class="fa fa-cog fa-spin fa-fw"></i>
@@ -87,6 +91,7 @@ import IFixtureData from '../helpers/FixtureData';
 import IFixtureTableData from '../helpers/FixtureTableData';
 import IFixtureTableFields from '../helpers/FixtureTableFields';
 import IMatchData from '../helpers/MatchData';
+import ISelectInput from '../helpers/SelectInputHelper';
 
 @Component
 export default class Forecast extends Vue {
@@ -97,15 +102,23 @@ export default class Forecast extends Vue {
     private CurrentTime?: Date = undefined;
     private OnlyAvailables: boolean = false;
     private ButtonOcupied: boolean = false;
+    private options: ISelectInput[] = [];
 
     constructor() {
         super();
+        this.fields.push(new IFixtureTableFields('wwGroup', 'Grupo'));
         this.fields.push(new IFixtureTableFields('date', 'Fecha'));
         this.fields.push(new IFixtureTableFields('team1Name', 'Equipo'));
         this.fields.push(new IFixtureTableFields('Result', 'Resultado'));
         this.fields.push(new IFixtureTableFields('team2Name', 'Equipo'));
-        this.fields.push(new IFixtureTableFields('wwGroup', 'Grupo'));
         this.fields.push(new IFixtureTableFields('actions', ''));
+        let i: number;
+        for (i = 0; i < 51; i++) {
+            this.options.push( {
+                value: i,
+                text: i.toString()
+            });
+        }
     }
 
     private mounted() {

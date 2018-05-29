@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Admin from './views/Admin.vue';
+import RecoverMail from './views/CreateNewPassword.vue';
 import Forecast from './views/Forecast.vue';
 import Login from './views/Login.vue';
 import Logout from './views/Logout.vue';
@@ -52,6 +53,11 @@ export default new Router({
       path: '/Logout',
       name: 'Logout',
       component: Logout
+    },
+    {
+      path: '/recoverpass',
+      name: 'RecoverMail',
+      component: RecoverMail
     }
   ]
 });

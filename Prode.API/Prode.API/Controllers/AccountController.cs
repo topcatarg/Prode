@@ -135,8 +135,27 @@ namespace Prode.API.Controllers
             }
             //Create GUID
             Guid guid = Guid.NewGuid();
-            await _mailService.SendRecoverPassword(mail,guid);
-            return new OkResult();
+            var resul = await _mailService.SendRecoverPassword(mail,guid);
+            if (resul == System.Net.HttpStatusCode.Accepted)
+            {
+                //Store guid on recovery table 
+                if (await _userService.StoreGuidRecovery(guid, mail))
+                {
+                    return Ok();
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        [Route("api/setnewpassword")]
+        public async Task<IActionResult> SetNewPassword(string pass, string guid)
+        {
+            if (await _userService.ChangePasswordAfterLost(pass, guid))
+            {
+                return Ok();
+            }
+            return BadRequest();
         }
 
         #region Create User

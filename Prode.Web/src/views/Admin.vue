@@ -6,7 +6,7 @@
                 <AdminMatchs class="mt-2"/>
             </b-tab>
             <b-tab title="Usuarios">
-                <AdminUserButtons class="mt-2"/>
+                <AdminCreateGroup class="mt-2"/>
                 <AdminUserList class="mt-2"/>
             </b-tab>
         </b-tabs>
@@ -15,6 +15,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import AdminCreateGroup from '../components/AdminCreateGroup.vue';
 import AdminMatchs from '../components/AdminMatchs.vue';
 import AdminMatchsButtons from '../components/AdminMatchsButtons.vue';
 import AdminUserButtons from '../components/AdminUserButtons.vue';
@@ -25,7 +26,8 @@ import AdminUserList from '../components/AdminUserLists.vue';
     AdminMatchsButtons,
     AdminMatchs,
     AdminUserButtons,
-    AdminUserList
+    AdminUserList,
+    AdminCreateGroup
   }
 })
 export default class Admin extends Vue {

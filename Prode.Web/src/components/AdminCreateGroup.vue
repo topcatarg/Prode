@@ -1,58 +1,58 @@
 <template>
-    <div class="container">
-        <b-form @submit="onSubmit" class="mt-4">
+    <div class="container border border-secondary rounded">
+        <b-form @submit="onSubmit" class="mt-4 mb-2 ">
             <b-form-group
                 horizontal
                 label-cols="4"
-                id="fieldset1"
-                label="Direccion de correo">
-                <b-form-input v-model.trim="UserMail" required type="email"/>
+                id="pass2"
+                label="Nombre del grupo">
+                <b-form-input v-model.trim="GroupName" required />
             </b-form-group>
-            <b-button type="submit" variant="primary" class="mr-3"
-            :disabled="ButtonOcupied">
+            <b-button type="submit" variant="primary" class="mr-3" :disabled="ButtonOcupied">
                 <div v-if="!ButtonOcupied">
-                    Recuperar password
+                    Crear Grupo
                 </div>
                 <div v-else-if="ButtonOcupied">
                     <i class="fa fa-cog fa-spin fa-fw"></i>
                 </div>
             </b-button>
-            <ErrorAlert :message="this.GeneralError" class="mt-2"/>
-            <SuccessAlert :message="this.GeneralMessage" class="mt-2"/>
         </b-form>
+        <ErrorAlert :message=this.GeneralError class="mt-2"/>
+        <SuccessAlert :message=this.GeneralMessage class="mt-2"/>
     </div>
 </template>
 
 <script lang="ts">
 import Axios from 'axios';
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import ErrorAlert from '../components/ErrorAlert.vue';
 import SuccessAlert from '../components/SuccesAlert.vue';
 
 @Component({
-  components: {
-    ErrorAlert,
-    SuccessAlert
-  }
+    components: {
+        ErrorAlert,
+        SuccessAlert
+    }
 })
-export default class RecoverMail extends Vue {
+export default class AdminCreateGroup extends Vue {
     private GeneralError: string = '';
     private GeneralMessage: string = '';
-    private UserMail: string = '';
     private ButtonOcupied: boolean = false;
+    private GroupName: string = '';
 
     private onSubmit() {
-        this.ClearMessages();
         this.ButtonOcupied = true;
-        Axios.post(process.env.VUE_APP_BASE_URI + 'recorverpassword?mail=' + this.UserMail,
+        this.ClearMessages();
+        // test group
+        Axios.post(process.env.VUE_APP_BASE_URI + 'admin/CreateGroup?GroupName=' + this.GroupName,
         {},
         {withCredentials: true})
         .then(response => {
-            this.GeneralMessage = 'Se ha enviado el mail';
+            this.GeneralMessage = 'Grupo creado con exito';
             this.ButtonOcupied = false;
         })
         .catch(error => {
-            this.GeneralError = 'Ocurrio un error al enviar el mail (la direccion de correo es correcta?)';
+            this.GeneralError = 'Ocurrio un error';
             this.ButtonOcupied = false;
         });
     }
@@ -63,4 +63,3 @@ export default class RecoverMail extends Vue {
     }
 }
 </script>
-

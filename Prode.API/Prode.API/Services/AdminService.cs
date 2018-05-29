@@ -14,9 +14,17 @@ namespace Prode.API.Services
 
 		Task<ImmutableArray<Teams>> GetTeams();
 
+		Task<ImmutableArray<Groups>> GetGroups();
+
+		Task<ImmutableArray<UserInfo>> GetUsers(int GroupId);
+
 		Task<bool> UpdateGame(MatchResult match);
 
 		Task<bool> UpdateScores();
+
+		Task<bool> CreateGroup(string GroupName);
+
+		Task<bool> ChangePaid(int UserId);
 	}
 
 	public class AdminService : IAdminService
@@ -50,6 +58,31 @@ From Matches m ");
 select * from Teams");
 				return v.ToImmutableArray(); ;
 			}
+		}
+
+		public async Task<ImmutableArray<Groups>> GetGroups()
+		{
+			using (var db = _dbService.SimpleDbConnection())
+			{
+				var v = await db.QueryAsync<Groups>(@"
+select * from GameGroups");
+				return v.ToImmutableArray(); 
+			}
+		}
+
+		public async Task<ImmutableArray<UserInfo>> GetUsers(int GroupId)
+		{
+			using (var db = _dbService.SimpleDbConnection())
+			{
+				return (await db.QueryAsync<UserInfo>(@"
+Select Id, TeamName, Mail, HasPaid
+from Users
+Where GameGroupId = @GroupId", new
+				{
+					GroupId
+				})).ToImmutableArray();
+			}
+
 		}
 
 		public async Task<bool> UpdateGame(MatchResult match)
@@ -136,5 +169,33 @@ Where Id = @userid", new
 			}
 			return true;
 		}
+
+		public async Task<bool> CreateGroup(string GroupName)
+		{
+			using (var db = _dbService.SimpleDbConnection())
+			{
+				return (await db.ExecuteAsync(@"
+Insert into GameGroups (GameGroup)
+Values (@GroupName)", new
+				{
+					GroupName
+				}) > 0);
+			}
+		}
+
+		public async Task<bool> ChangePaid(int UserId)
+		{
+			using (var db = _dbService.SimpleDbConnection())
+			{
+				return (await db.ExecuteAsync(@"
+Update Users
+Set HasPaid = abs(HasPaid - 1)
+Where ID = @UserId", new
+				{
+					UserId
+				}) > 0);
+			}
+		}
+
 	}
 }
