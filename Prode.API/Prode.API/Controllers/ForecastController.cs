@@ -51,8 +51,11 @@ namespace Prode.API.Controllers
         [Route("api/forecast/fillall")]
         public async Task<IActionResult> FillAllGames([FromBody] Match[] MatchsData)
         {
-            await _forecastService.FillAllGames(MatchsData);
-            return Ok();
+            if (await _forecastService.FillAllGames(MatchsData))
+            {
+                return Ok();
+            }
+            return BadRequest();
         }
 
     }

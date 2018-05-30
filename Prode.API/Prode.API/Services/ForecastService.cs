@@ -33,6 +33,7 @@ namespace Prode.API.Services
                 var v = await
                     db.QueryAsync<Matchs>(@"
 select *,
+strftime(""%d/%m %H:%M"",date) as StandardDate,
 (select Team from Teams t where t.id = m.team1) as Team1Name,
 (select Team from Teams t where t.id = m.team2) as Team2Name,
 (select Code from Teams t where t.id = m.team1) as Team1Flag,
@@ -80,20 +81,39 @@ Where UserId = @userid and Id = @matchid", new
         {
             using (var db = _dbService.SimpleDbConnection())
             {
+                //Get Current Time.
+                DateTime ThisTime = GetTime();
+                var matchs = await db.QueryAsync<Matchs>(@"
+Select Date ,u.id
+From Matches m join UserForecast u on m.id = matchid
+where UserId = @userid", new
+                {
+                    userid = MatchsData[0].UserId
+                });
+                var validMatchs = matchs.Where(p => p.Date > ThisTime).ToList();
                 foreach(var m in MatchsData)
                 {
-                    await db.ExecuteAsync(@"
+                    if (validMatchs.FirstOrDefault(p => p.Id == m.MatchId) != null)
+                    {
+                        var r = await db.ExecuteAsync(@"
 Update UserForecast
 Set Team1Goals = @goals1, 
 Team2Goals = @goals2
 Where UserId = @userid and Id = @matchid", new
-                    {
-                        userid = m.UserId,
-                        matchid = m.MatchId,
-                        goals1 = m.Team1Forecast,
-                        goals2 = m.Team2Forecast
-                    });
+                        {
+                            userid = m.UserId,
+                            matchid = m.MatchId,
+                            goals1 = m.Team1Forecast,
+                            goals2 = m.Team2Forecast
+                        });
+                        if (r == 0)
+                        {
+                            return false;
+                        }
+                    }
                 }
+                //Send mail with the data
+
                 return true;
             }
         }

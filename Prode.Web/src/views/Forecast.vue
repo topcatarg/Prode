@@ -35,29 +35,35 @@
                     </b-button>
                 </b-col>
             </b-row>
+            <b-row>
+                <b-col>
+                    <ErrorAlert :message=this.GeneralError class="mt-2"/>
+                    <SuccessAlert :message=this.GeneralMessage class="mt-2"/>
+                </b-col>
+            </b-row>
         </b-container>
         <b-table striped hover stacked="md" :items="filteredItems" :fields="fields" class="ml-2 mr-2">
             <template slot="wwGroup" slot-scope="data">
                 {{data.item.wwGroup}}
             </template>
             <template slot="date" slot-scope="data">
-                {{data.item.date}}
+                {{data.item.standardDate}}
             </template>
             <template slot="team1Name" slot-scope="data">
                 <b-img v-if="data.item.team1Flag!=null" :src="'http://www.countryflags.io/'+ data.item.team1Flag +'/shiny/24.png'" />
                 {{data.item.team1Name}}
             </template>
             <template slot="Result" slot-scope="data">
-                <b-container >
+                <b-container>
                     <b-row>
                         <b-col cols="5.5" class="m-0 p-0">
-                            <b-form-select v-model="data.item.team1Forecast" :options="options" />
+                            <b-form-select v-model="data.item.team1Forecast" :options="options" :disabled="ButtonOcupied||!data.item.canUpdate"/>
                         </b-col>
                         <b-col cols="1" class="m-0 p-0">
                             -
                         </b-col>
                         <b-col cols="5.5" class="m-0 p-0">
-                            <b-form-select v-model="data.item.team2Forecast" :options="options" />
+                            <b-form-select v-model="data.item.team2Forecast" :options="options" :disabled="ButtonOcupied||!data.item.canUpdate"/>
                         </b-col>
                     </b-row>
                 </b-container>
@@ -66,20 +72,6 @@
                 <b-img v-if="data.item.team2Flag!=null" :src="'http://www.countryflags.io/'+ data.item.team2Flag +'/shiny/24.png'" />
                 {{data.item.team2Name}}
             </template>
-            <template slot="actions" slot-scope="data">
-                <b-button size="sm" variant="primary" 
-                    @click="StoreRow(data.item.id, data.item.team1Forecast, data.item.team2Forecast)"
-                    v-if="data.item.canUpdate"
-                    :disabled="ButtonOcupied"
-                    >
-                    <div v-if="!ButtonOcupied">
-                            Guardar esta fila
-                        </div>
-                        <div v-else-if="ButtonOcupied">
-                            <i class="fa fa-cog fa-spin fa-fw"></i>
-                    </div>
-                </b-button>
-            </template>
         </b-table>
     </div>
 </template>
@@ -87,13 +79,20 @@
 <script lang="ts">
 import Axios from 'axios';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import ErrorAlert from '../components/ErrorAlert.vue';
+import SuccessAlert from '../components/SuccesAlert.vue';
 import IFixtureData from '../helpers/FixtureData';
 import IFixtureTableData from '../helpers/FixtureTableData';
 import IFixtureTableFields from '../helpers/FixtureTableFields';
 import IMatchData from '../helpers/MatchData';
 import ISelectInput from '../helpers/SelectInputHelper';
 
-@Component
+@Component({
+    components: {
+        ErrorAlert,
+        SuccessAlert
+    }
+})
 export default class Forecast extends Vue {
     private fields: IFixtureTableFields[] = [];
     private items: IFixtureData[] = [];
@@ -103,6 +102,8 @@ export default class Forecast extends Vue {
     private OnlyAvailables: boolean = false;
     private ButtonOcupied: boolean = false;
     private options: ISelectInput[] = [];
+    private GeneralError: string = '';
+    private GeneralMessage: string = '';
 
     constructor() {
         super();
@@ -111,7 +112,6 @@ export default class Forecast extends Vue {
         this.fields.push(new IFixtureTableFields('team1Name', 'Equipo'));
         this.fields.push(new IFixtureTableFields('Result', 'Resultado'));
         this.fields.push(new IFixtureTableFields('team2Name', 'Equipo'));
-        this.fields.push(new IFixtureTableFields('actions', ''));
         let i: number;
         for (i = 0; i < 51; i++) {
             this.options.push( {
@@ -122,10 +122,7 @@ export default class Forecast extends Vue {
     }
 
     private mounted() {
-        Axios.get(process.env.VUE_APP_BASE_URI + 'getstandartime')
-        .then(Response => this.CurrentTime = Response.data);
-        Axios.get(process.env.VUE_APP_BASE_URI + 'forecast/my?UserId=' + this.ComputedUserId, {withCredentials: true})
-        .then(Response => this.items = this.filteredItems = Response.data);
+        this.GetMyForecast();
     }
 
     get ComputedUserId(): number {
@@ -146,6 +143,7 @@ export default class Forecast extends Vue {
 
     private SaveAll() {
         this.ButtonOcupied = true;
+        this.ClearMessages();
         const v: IMatchData[] = [];
         this.items.forEach(t => {
             if (t.canUpdate) {
@@ -161,7 +159,21 @@ export default class Forecast extends Vue {
         Axios.post(process.env.VUE_APP_BASE_URI + 'forecast/fillall',
         v,
         {withCredentials: true})
-        .then(response => this.ButtonOcupied = false);
+        .then(response => {
+            this.ButtonOcupied = false;
+            this.GeneralMessage = 'Se actualizaron sus datos';
+            this.GetMyForecast();
+            this.filtrar();
+        })
+        .catch(error => {
+            this.ButtonOcupied = false;
+            this.GeneralError = error.response;
+        });
+    }
+
+    private GetMyForecast() {
+        Axios.get(process.env.VUE_APP_BASE_URI + 'forecast/my?UserId=' + this.ComputedUserId, {withCredentials: true})
+        .then(Response => this.items = this.filteredItems = Response.data);
     }
 
     @Watch('FilterValue')
@@ -179,6 +191,11 @@ export default class Forecast extends Vue {
                 this.filteredItems = this.items.filter(i => i.wwGroup === this.FilterValue);
             }
         }
+    }
+
+    private ClearMessages() {
+        this.GeneralError = '';
+        this.GeneralMessage = '';
     }
 }
 </script>

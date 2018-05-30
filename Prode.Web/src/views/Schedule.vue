@@ -15,7 +15,10 @@
             <option value="SEMIFINALES">SEMIFINALES</option>
             <option value="FINALES">FINALES</option>
         </b-form-select>
-        <b-table striped hover :items="filteredItems" :fields="fields">
+        <b-table striped hover stacked="md" :items="filteredItems" :fields="fields">
+            <template slot="date" slot-scope="data">
+                {{data.item.standardDate}}
+            </template>
             <template slot="team1Name" slot-scope="data">
                 <b-img v-if="data.item.team1Flag!=null" :src="'http://www.countryflags.io/'+ data.item.team1Flag +'/shiny/24.png'" />
                 {{data.item.team1Name}}
@@ -45,11 +48,11 @@ export default class Schedule extends Vue {
 
     constructor() {
         super();
+        this.fields.push(new IFixtureTableFields('wwGroup', 'Grupo'));
         this.fields.push(new IFixtureTableFields('date', 'Fecha'));
         this.fields.push(new IFixtureTableFields('team1Name', 'Equipo'));
         this.fields.push(new IFixtureTableFields('Result', 'Resultado'));
         this.fields.push(new IFixtureTableFields('team2Name', 'Equipo'));
-        this.fields.push(new IFixtureTableFields('wwGroup', 'Grupo'));
     }
 
     private mounted() {

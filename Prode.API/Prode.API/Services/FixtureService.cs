@@ -28,6 +28,7 @@ namespace Prode.API.Services
             {
                 var v = await db.QueryAsync<Matchs>(@"
 select *,
+strftime(""%d/%m %H:%M"",date) as StandardDate,
 (select Team from Teams t where t.id = m.team1) as Team1Name,
 (select Team from Teams t where t.id = m.team2) as Team2Name,
 (select Code from Teams t where t.id = m.team1) as Team1Flag,

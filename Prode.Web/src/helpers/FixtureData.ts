@@ -1,6 +1,7 @@
 export default interface IFixtureData {
      id: number;
      date: Date;
+     standardDate: string;
      team1: number;
      team2: number;
      team1Name: string;

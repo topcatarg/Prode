@@ -9,6 +9,7 @@ namespace Prode.API.Models
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
+        public string StandardDate { get; set; }
         public int Team1 { get; set; }
         public int Team2 { get; set; }
         public string Team1Name { get; set; }
