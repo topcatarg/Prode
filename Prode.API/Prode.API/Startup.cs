@@ -87,12 +87,15 @@ namespace Prode.API
                 settings.LogFilters.Cookie[".AspNetCore.Cookies"] = "hidden";
             });
 
+#if DEBUG
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
             });
+#endif
         }
+
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -116,6 +119,7 @@ namespace Prode.API
                 HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.Always
             });
 
+#if DEBUG
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
@@ -125,7 +129,7 @@ namespace Prode.API
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
-
+#endif
             app.UseMvc();
             
         }

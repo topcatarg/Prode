@@ -27,6 +27,12 @@ namespace Prode.API.Services
         Task<bool> StoreGuidRecovery(Guid guid, string mail);
 
         Task<bool> ChangePasswordAfterLost(string pass, string guid);
+
+        Task<bool> ChangePassword(int UserId, string pass);
+
+        Task<bool> ChangeTeamName(int UserId, string TeamName);
+
+        Task<bool> ChangeReceiveMails(int UserId, int ReceiveMails, int ReceiveAdminMails);
     }
 
     public class UserService: IUserService
@@ -191,6 +197,54 @@ Where UserId = @userid;", new
                 {
                     newpass,
                     userid
+                }) > 0);
+            }
+        }
+
+        public async Task<bool> ChangePassword(int UserId, string pass)
+        {
+            string newpass = EncryptPassword(pass);
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                return (await db.ExecuteAsync(@"
+Update Users
+set Password = @newpass
+Where ID = @userid", new
+                {
+                    newpass,
+                    userid = UserId
+                }) > 0);
+            }
+        }
+
+        public async Task<bool> ChangeTeamName(int UserId, string TeamName)
+        {
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                return (await db.ExecuteAsync(@"
+Update Users
+set TeamName = @TeamName
+Where ID = @userid", new
+                {
+                    TeamName,
+                    userid = UserId
+                }) > 0);
+            }
+        }
+
+        public async Task<bool> ChangeReceiveMails(int UserId, int ReceiveMails, int ReceiveAdminMails)
+        {
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                return (await db.ExecuteAsync(@"
+Update Users
+set ReceiveMails = @ReceiveMails,
+ReceiveAdminMails = @ReceiveAdminMails
+Where ID = @userid", new
+                {
+                    ReceiveMails,
+                    ReceiveAdminMails,
+                    userid = UserId
                 }) > 0);
             }
         }

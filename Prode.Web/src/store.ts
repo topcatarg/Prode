@@ -55,7 +55,23 @@ export default new Vuex.Store<ProfileState> ({
       if (state.user !== undefined) {
         return state.user.gameGroupId;
       }
+    },
+    UserTeamName: state => {
+      if (state.user !== undefined) {
+        return state.user.teamName;
+      }
+    },
+    UserReceiveMails: state => {
+      if (state.user !== undefined) {
+        return state.user.receiveMails;
+      }
+    },
+    UserReceiveAdminMails: state => {
+      if (state.user !== undefined) {
+        return state.user.receiveAdminMails;
+      }
     }
+
   },
   strict: process.env.NODE_ENV !== 'production'
 });

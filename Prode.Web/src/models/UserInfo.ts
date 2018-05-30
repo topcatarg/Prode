@@ -5,6 +5,9 @@ export interface IUserInfo {
     isAdmin: boolean;
     id?: number;
     gameGroupId: number;
+    teamName: string;
+    receiveMails: boolean;
+    receiveAdminMails: boolean;
 }
 
 export interface ProfileState {

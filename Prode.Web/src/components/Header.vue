@@ -10,6 +10,7 @@
             <b-nav-item to="/" exact>Calendario</b-nav-item>
             <b-nav-item to="/Forecast" v-if="ComputedUserName !== ''">Pronosticos</b-nav-item>
             <b-nav-item to="/Rules">Reglas</b-nav-item>
+            <b-nav-item to="/Profile" v-if="ComputedUserName !== ''">Perfil</b-nav-item>
             <b-nav-item to="/Login" v-if="ComputedUserName === ''">Entrar</b-nav-item>
             <b-nav-item to="/Logout" v-if="ComputedUserName !== ''">Salir</b-nav-item>
             <b-nav-item to="/Admin" v-if="ComputedIsAdmin">Administrar</b-nav-item>

@@ -8,6 +8,7 @@ import Logout from './views/Logout.vue';
 import Position from './views/Positions.vue';
 import Rules from './views/Rules.vue';
 import Schedule from './views/Schedule.vue';
+import UserData from './views/UserData.vue';
 import Users from './views/Users.vue';
 
 Vue.use(Router);
@@ -58,6 +59,11 @@ export default new Router({
       path: '/recoverpass',
       name: 'RecoverMail',
       component: RecoverMail
+    },
+    {
+      path: '/Profile',
+      name: 'UserData',
+      component: UserData
     }
   ]
 });

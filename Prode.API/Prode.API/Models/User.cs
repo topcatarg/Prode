@@ -27,5 +27,9 @@ namespace Prode.API.Models
 
         public int GameGroupId { get; set; }
 
+        public bool ReceiveMails { get; set; }
+
+        public bool ReceiveAdminMails { get; set; }
+
     }
 }

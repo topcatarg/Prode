@@ -38,6 +38,10 @@ export default class App extends AppProps {
   msg: number = 123
   // use prop values for initial data
   helloMsg: string = 'Hello, ' + this.propMessage
+  //constructor
+  constructor() {
+    super();
+  }
   // lifecycle hook
   mounted () {
     this.greet()

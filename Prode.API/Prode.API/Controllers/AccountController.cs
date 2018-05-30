@@ -67,14 +67,25 @@ namespace Prode.API.Controllers
                 new Claim(ClaimType.Id, user.Id.ToString(CultureInfo.InvariantCulture)),
                 new Claim(ClaimType.Name, user.Name),
                 new Claim(ClaimType.Mail, user.Mail),
-                new Claim(ClaimType.HasPaid, false.ToString())
+                new Claim(ClaimType.TeamName, user.TeamName)
             };
 
             if (user.IsAdmin)
             {
                 claims.Add(new Claim(ClaimType.IsAdmin, "1"));
             }
-
+            if (user.HasPaid)
+            {
+                claims.Add(new Claim(ClaimType.HasPaid, "1"));
+            }
+            if(user.ReceiveMails)
+            {
+                claims.Add(new Claim(ClaimType.ReceiveMails, "1"));
+            }
+            if(user.ReceiveAdminMails)
+            {
+                claims.Add(new Claim(ClaimType.ReceiveAdminMails, "1"));
+            }
             var identity = new ClaimsIdentity(claims, "login");
 
             await HttpContext.SignInAsync(
@@ -100,14 +111,37 @@ namespace Prode.API.Controllers
         public async Task<IActionResult> WhoAmI()
         {
             var isAdmin = (await _authorizationService.AuthorizeAsync(User, ProdePolicy.IsAdmin)).Succeeded;
+            string resul;
+            resul = User.GetClaim<string>(ClaimType.HasPaid);
+            bool hasPaid = false;
+            if (resul != null || resul == "1")
+            {
+                hasPaid = true;
+            }
+            resul = User.GetClaim<string>(ClaimType.ReceiveMails);
+            bool receiveMails = false;
+            if (resul != null || resul == "1")
+            {
+                receiveMails = true;
+            }
+            resul = User.GetClaim<string>(ClaimType.ReceiveAdminMails);
+            bool receiveAdminMails = false;
+            if (resul != null || resul == "1")
+            {
+                receiveAdminMails = true;
+            }
+
 
             var v = new UserInfo
             {
                 Name = User.GetClaim<string>(ClaimType.Name),
                 Mail = User.GetClaim<string>(ClaimType.Mail),
-                HasPaid = User.GetClaim<Boolean>(ClaimType.HasPaid),
+                HasPaid = hasPaid,
                 IsAdmin = isAdmin,
-                Id = User.GetClaim<int>(ClaimType.Id)
+                Id = User.GetClaim<int>(ClaimType.Id),
+                TeamName = User.GetClaim<string>(ClaimType.TeamName),
+                ReceiveMails = receiveMails,
+                ReceiveAdminMails = receiveAdminMails
             };
 
             return new OkObjectResult(v);
@@ -157,6 +191,44 @@ namespace Prode.API.Controllers
             }
             return BadRequest();
         }
+
+        #region profile admin
+        [HttpPost]
+        [Authorize]
+        [Route("api/changepassword")]
+        public async Task<IActionResult> ChangePassword(int UserId, string NewPassword)
+        {
+            if (await _userService.ChangePassword(UserId, NewPassword))
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("api/changeteamname")]
+        public async Task<IActionResult> ChangeTeamName(int UserId, string TeamName)
+        {
+            if (await _userService.ChangeTeamName(UserId,TeamName))
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("api/changemailreceived")]
+        public async Task<IActionResult> ChangeMailReceived(int UserId, bool ReceiveMails, bool ReceiveAdminMails)
+        {
+            if (await _userService.ChangeReceiveMails(UserId, ReceiveMails?1:0, ReceiveAdminMails?1:0))
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+        #endregion
 
         #region Create User
 

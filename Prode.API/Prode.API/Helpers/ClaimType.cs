@@ -12,5 +12,9 @@ namespace Prode.API.Helpers
         public const string Mail = nameof(Mail);
         public const string IsAdmin = nameof(IsAdmin);
         public const string HasPaid = nameof(HasPaid);
+        public const string TeamName = nameof(TeamName);
+        public const string ReceiveMails = nameof(ReceiveMails);
+        public const string ReceiveAdminMails = nameof(ReceiveAdminMails);
+
     }
 }
