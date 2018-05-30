@@ -48,7 +48,7 @@ namespace Prode.API.Services
                 Subject = "Bienvenido al prode mundial!",
                 PlainTextContent = @"
 Este mail es para comprobar la registración al prode.
-Por favor, presione sobre el siguiente link para comprobar el mail, y asi poder recuperar su clave o recibir novedades.
+Podes ir a la seccion perfil y pedir recibir un mail cada vez que cambies tu pronostico (o cuando el administrador cambie el suyo).
 
 (Luego del mundial, la base va a ser borrada, asi que olvidense de recibir mas mails).
 "
