@@ -15,6 +15,7 @@ namespace Prode.API.Helpers
         public const string TeamName = nameof(TeamName);
         public const string ReceiveMails = nameof(ReceiveMails);
         public const string ReceiveAdminMails = nameof(ReceiveAdminMails);
+        public const string GameGroupId = nameof(GameGroupId);
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -33,6 +34,8 @@ namespace Prode.API.Services
         Task<bool> ChangeTeamName(int UserId, string TeamName);
 
         Task<bool> ChangeReceiveMails(int UserId, int ReceiveMails, int ReceiveAdminMails);
+
+        Task<ImmutableArray<string>> GetMailsFromAdminForecastReceivers();
     }
 
     public class UserService: IUserService
@@ -246,6 +249,17 @@ Where ID = @userid", new
                     ReceiveAdminMails,
                     userid = UserId
                 }) > 0);
+            }
+        }
+
+        public async Task<ImmutableArray<string>> GetMailsFromAdminForecastReceivers()
+        {
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                return (await db.QueryAsync<string>(@"
+Select Mail
+From Users
+Where ReceiveAdminMails = 1")).ToImmutableArray();
             }
         }
 

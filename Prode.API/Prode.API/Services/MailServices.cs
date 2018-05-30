@@ -7,6 +7,9 @@ using System.Net;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Immutable;
+using Prode.API.Models;
+using System.Text;
 
 namespace Prode.API.Services
 {
@@ -16,6 +19,10 @@ namespace Prode.API.Services
         Task<HttpStatusCode> SendHelloMail(string MailTo);
 
         Task<HttpStatusCode> SendRecoverPassword(string mail, Guid guid);
+
+        Task<HttpStatusCode> SendMyResultsAsync(string mail, string TeamName, ImmutableArray<Matchs> matchs);
+
+        Task<HttpStatusCode> SendAdminResultsAsync(ImmutableArray<string> MailsTo, string TeamName, ImmutableArray<Matchs> matchs);
     }
 
     public class MailServices: IMailServices
@@ -68,5 +75,54 @@ https://prodemundial.netlify.com/#/recoverpass?code={guid}"
             return response.StatusCode;
         }
 
+        public async Task<HttpStatusCode> SendMyResultsAsync(string mail, string TeamName, ImmutableArray<Matchs> matchs)
+        {
+            var client = new SendGridClient(ApiKey);
+            StringBuilder b = new StringBuilder();
+            b.AppendLine("Estos son los resultados de los partidos que pronosticastes!");
+            b.AppendLine();
+            b.AppendLine("----------");
+            b.AppendLine();
+            foreach(var m in matchs)
+            {
+                b.AppendLine(m.Team1Name + " " + m.Team1Forecast + "-" + m.Team2Forecast + " " + m.Team2Name);
+            }
+            var msg = new SendGridMessage()
+            {
+                From = new EmailAddress(FromAddres, FromName),
+                Subject = "Tus nuevos resultados",
+                PlainTextContent = b.ToString()
+            };
+            msg.AddTo(new EmailAddress(mail));
+            var response = await client.SendEmailAsync(msg);
+            return response.StatusCode;
+        }
+
+        public async Task<HttpStatusCode> SendAdminResultsAsync(ImmutableArray<string> MailsTo, string TeamName, ImmutableArray<Matchs> matchs)
+        {
+            var client = new SendGridClient(ApiKey);
+            StringBuilder b = new StringBuilder();
+            b.AppendLine("Estos son los resultados de los partidos que pronosticastes!");
+            b.AppendLine();
+            b.AppendLine("----------");
+            b.AppendLine();
+            foreach (var m in matchs)
+            {
+                b.AppendLine(m.Team1Name + " " + m.Team1Forecast + "-" + m.Team2Forecast + " " + m.Team2Name);
+            }
+            var msg = new SendGridMessage()
+            {
+                From = new EmailAddress(FromAddres, FromName),
+                Subject = "Tus nuevos resultados",
+                PlainTextContent = b.ToString()
+            };
+            msg.AddTo(new EmailAddress(FromAddres));
+            foreach (string s in MailsTo)
+            {
+                msg.AddBcc(new EmailAddress(s));
+            }
+            var response = await client.SendEmailAsync(msg);
+            return response.StatusCode;
+        }
     }
 }

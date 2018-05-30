@@ -15,6 +15,7 @@ namespace Prode.API.Services
         Task<bool> FillMatch(Match MatchData);
 
         Task<bool> FillAllGames(Match[] MatchsData);
+
     }
 
     public class ForecastService: IForecastService
@@ -72,10 +73,6 @@ Where UserId = @userid and Id = @matchid", new
             }
         }
 
-        public DateTime GetTime()
-        {
-            return DateTime.UtcNow.AddMinutes(-175);
-        }
 
         public async Task<bool> FillAllGames(Match[] MatchsData)
         {
@@ -117,5 +114,15 @@ Where UserId = @userid and Id = @matchid", new
                 return true;
             }
         }
+
+
+        #region Private functions
+
+        private DateTime GetTime()
+        {
+            return DateTime.UtcNow.AddMinutes(-175);
+        }
+
+        #endregion
     }
 }

@@ -66,7 +66,7 @@ export default class LoginUser extends Vue {
         })
         .then(data => {
                 this.$store.dispatch('GetUserData');
-                this.$router.push('/Posiciones');
+                this.$router.push('/');
                 }
             )
         .catch(error => this.GetError(error.response.data));

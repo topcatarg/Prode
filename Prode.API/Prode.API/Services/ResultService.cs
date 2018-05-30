@@ -32,7 +32,11 @@ Select
 teamName,
 score
 From Users
-Order by Score desc");
+Where GameGroupId = @GroupId
+Order by Score desc", new
+                {
+                    GroupId
+                });
                 return v.ToImmutableArray();
             }
         }

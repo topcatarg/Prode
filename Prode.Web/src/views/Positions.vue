@@ -30,7 +30,9 @@ export default class Positiones extends Vue {
     }
 
     private mounted() {
-        Axios.get(process.env.VUE_APP_BASE_URI + 'results?' + this.UserGroupId, {withCredentials: true})
+        Axios.get(process.env.VUE_APP_BASE_URI + 'results?GroupNumber='
+        + this.$store.getters.UserGroup,
+        {withCredentials: true})
         .then(data => this.items = data.data);
     }
 

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Prode.API.Services;
 using Prode.API.Models;
+using Prode.API.Helpers;
+using System.Collections.Immutable;
 
 namespace Prode.API.Controllers
 {
@@ -15,12 +17,18 @@ namespace Prode.API.Controllers
     {
         private readonly IForecastService _forecastService;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IMailServices _mailService;
+        private readonly IUserService _userService;
 
         public ForecastController(IForecastService forecastService,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IMailServices mailService,
+            IUserService userService)
         {
             _forecastService = forecastService;
             _authorizationService = authorizationService;
+            _mailService = mailService;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -53,6 +61,29 @@ namespace Prode.API.Controllers
         {
             if (await _forecastService.FillAllGames(MatchsData))
             {
+                int userId = User.GetClaim<int>(ClaimType.Id);
+                string userMail = User.GetClaim<string>(ClaimType.Mail);
+                string TeamName = User.GetClaim<string>(ClaimType.TeamName);
+                //Send mails if needed
+                string resul = User.GetClaim<string>(ClaimType.ReceiveMails);
+                ImmutableArray<Matchs> m;
+                if (resul != null || resul == "1")
+                {
+                    //send mail
+                    m = await _forecastService.GetUserMatchs(userId);
+                    await _mailService.SendMyResultsAsync(userMail, TeamName, m);
+                }
+                var isAdmin = (await _authorizationService.AuthorizeAsync(User, ProdePolicy.IsAdmin)).Succeeded;
+                if (isAdmin)
+                {
+                    if (m == null)
+                    {
+                        m = await _forecastService.GetUserMatchs(userId);
+                    }
+                    var to = await _userService.GetMailsFromAdminForecastReceivers();
+                    //send mail to users
+                    await _mailService.SendAdminResultsAsync(to, TeamName, m);
+                }
                 return Ok();
             }
             return BadRequest();

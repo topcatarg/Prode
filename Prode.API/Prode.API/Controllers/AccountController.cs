@@ -67,7 +67,8 @@ namespace Prode.API.Controllers
                 new Claim(ClaimType.Id, user.Id.ToString(CultureInfo.InvariantCulture)),
                 new Claim(ClaimType.Name, user.Name),
                 new Claim(ClaimType.Mail, user.Mail),
-                new Claim(ClaimType.TeamName, user.TeamName)
+                new Claim(ClaimType.TeamName, user.TeamName),
+                new Claim(ClaimType.GameGroupId, user.GameGroupId.ToString(CultureInfo.InvariantCulture))
             };
 
             if (user.IsAdmin)
@@ -141,7 +142,8 @@ namespace Prode.API.Controllers
                 Id = User.GetClaim<int>(ClaimType.Id),
                 TeamName = User.GetClaim<string>(ClaimType.TeamName),
                 ReceiveMails = receiveMails,
-                ReceiveAdminMails = receiveAdminMails
+                ReceiveAdminMails = receiveAdminMails,
+                GameGroupId = User.GetClaim<int>(ClaimType.GameGroupId)
             };
 
             return new OkObjectResult(v);

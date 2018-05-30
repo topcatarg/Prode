@@ -142,7 +142,7 @@ export default class CreateUser extends Vue {
         })
         .then(data => {
                 this.$store.dispatch('GetUserData');
-                this.$router.push('/Posiciones');
+                this.$router.push('/');
                 }
             );
     }
