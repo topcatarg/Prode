@@ -1,0 +1,9 @@
+[build]
+  base = "Prode.Web"
+  publish = "Prode.Web/dist"
+  
+[[redirects]]
+  from = "/api/*"
+  to = "https://prodeapi.azurewebsites.net/api/:splat"
+  status = 200
+  force = true # Ensure that we always redirect
