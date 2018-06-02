@@ -87,7 +87,7 @@ https://prodemundial.netlify.com/#/recoverpass?code={guid}"
             b.AppendLine();
             foreach(var m in matchs)
             {
-                b.AppendLine(m.Team1Name + " " + m.Team1Forecast + "-" + m.Team2Forecast + " " + m.Team2Name);
+                b.AppendLine(m.Team1Name + " " + m.Team1Forecast + "-" + m.Team2Forecast + " " + m.Team2Name + Environment.NewLine);
             }
             var msg = new SendGridMessage()
             {

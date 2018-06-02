@@ -25,8 +25,8 @@
 <script lang="ts">
 import Axios from 'axios';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import ErrorAlert from '../components/ErrorAlert.vue';
-import SuccessAlert from '../components/SuccesAlert.vue';
+import ErrorAlert from '../../components/ErrorAlert.vue';
+import SuccessAlert from '../../components/SuccesAlert.vue';
 
 @Component({
     components: {

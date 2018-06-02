@@ -15,11 +15,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import AdminCreateGroup from '../components/AdminCreateGroup.vue';
-import AdminMatchs from '../components/AdminMatchs.vue';
-import AdminMatchsButtons from '../components/AdminMatchsButtons.vue';
-import AdminUserButtons from '../components/AdminUserButtons.vue';
-import AdminUserList from '../components/AdminUserLists.vue';
+import AdminCreateGroup from '../components/admin/AdminCreateGroup.vue';
+import AdminMatchs from '../components/admin/AdminMatchs.vue';
+import AdminMatchsButtons from '../components/admin/AdminMatchsButtons.vue';
+import AdminUserButtons from '../components/admin/AdminUserButtons.vue';
+import AdminUserList from '../components/admin/AdminUserLists.vue';
 
 @Component ({
   components: {

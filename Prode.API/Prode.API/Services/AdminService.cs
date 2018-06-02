@@ -20,6 +20,8 @@ namespace Prode.API.Services
 
 		Task<bool> UpdateGame(MatchResult match);
 
+		Task<bool> UpdateTeams(MatchResult match);
+
 		Task<bool> UpdateScores();
 
 		Task<bool> CreateGroup(string GroupName);
@@ -105,6 +107,24 @@ where id = @matchid", new
 					matchid = match.MatchId
 				});
 				return v > 0 ;
+			}
+		}
+
+		public async Task<bool> UpdateTeams(MatchResult match)
+		{
+			using (var db = _dbService.SimpleDbConnection())
+			{
+				var v = await db.ExecuteAsync(@"
+Update Matches
+Set Team1 = @team1,
+Team2 = @team2
+where id = @matchid", new
+				{
+					team1 = match.Team1,
+					team2 = match.Team2,
+					matchid = match.MatchId
+				});
+				return v > 0;
 			}
 		}
 

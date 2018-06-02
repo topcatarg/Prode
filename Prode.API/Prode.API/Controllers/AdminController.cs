@@ -67,6 +67,14 @@ namespace Prode.API.Controllers
 
         [HttpPost]
         [Authorize(Policy = ProdePolicy.IsAdmin)]
+        [Route("api/admin/UpdateTeams")]
+        public async Task<IActionResult> UpdateTeams([FromBody] MatchResult Match)
+        {
+            return new OkObjectResult(await _adminService.UpdateTeams(Match));
+        }
+
+        [HttpPost]
+        [Authorize(Policy = ProdePolicy.IsAdmin)]
         [Route("api/admin/UpdatePoints")]
         public async Task<IActionResult> UpdateScores()
         {

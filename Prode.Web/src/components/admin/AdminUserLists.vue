@@ -34,10 +34,10 @@
 <script lang="ts">
 import Axios from 'axios';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import IResultTableFields from '../helpers/ResultTableFields';
-import ISelectInput from '../helpers/SelectInputHelper';
-import GameGroups from '../models/GameGroups';
-import { IUserInfo } from '../models/UserInfo';
+import IResultTableFields from '../../helpers/ResultTableFields';
+import ISelectInput from '../../helpers/SelectInputHelper';
+import GameGroups from '../../models/GameGroups';
+import { IUserInfo } from '../../models/UserInfo';
 
 @Component
 export default class AdminUserList extends Vue {
