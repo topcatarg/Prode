@@ -1,16 +1,17 @@
 <template>
     <div class="container border border-secondary rounded">
+        <h2> Unirse a otro grupo </h2>
         <b-form @submit="onSubmit" class="mt-4 mb-2 ">
             <b-form-group
                 horizontal
                 label-cols="4"
                 id="pass2"
                 label="Nombre del grupo">
-                <b-form-input v-model.trim="GroupName" required />
+                <b-form-input v-model="GroupName" required />
             </b-form-group>
             <b-button type="submit" variant="primary" class="mr-3" :disabled="ButtonOcupied">
                 <div v-if="!ButtonOcupied">
-                    Crear Grupo
+                    Unirse
                 </div>
                 <div v-else-if="ButtonOcupied">
                     <i class="fa fa-cog fa-spin fa-fw"></i>
@@ -25,8 +26,8 @@
 <script lang="ts">
 import Axios from 'axios';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import ErrorAlert from '../components/ErrorAlert.vue';
-import SuccessAlert from '../components/SuccesAlert.vue';
+import ErrorAlert from '../ErrorAlert.vue';
+import SuccessAlert from '../SuccesAlert.vue';
 
 @Component({
     components: {
@@ -34,7 +35,7 @@ import SuccessAlert from '../components/SuccesAlert.vue';
         SuccessAlert
     }
 })
-export default class AdminCreateGroup extends Vue {
+export default class JoinAnotherGroup extends Vue {
     private GeneralError: string = '';
     private GeneralMessage: string = '';
     private ButtonOcupied: boolean = false;
@@ -44,15 +45,16 @@ export default class AdminCreateGroup extends Vue {
         this.ButtonOcupied = true;
         this.ClearMessages();
         // test group
-        Axios.post(process.env.VUE_APP_BASE_URI + 'admin/CreateGroup?GroupName=' + this.GroupName,
+        Axios.post(process.env.VUE_APP_BASE_URI + 'JoinOtherGroup?group=' + this.GroupName,
         {},
         {withCredentials: true})
         .then(response => {
-            this.GeneralMessage = 'Grupo creado con exito';
+            this.GeneralMessage = 'Se ha unido al grupo con exito';
             this.ButtonOcupied = false;
+            this.$store.dispatch('GetUserData');
         })
         .catch(error => {
-            this.GeneralError = 'Ocurrio un error';
+            this.GeneralError = 'Ocurrio un error (probablemente ese grupo no existe)';
             this.ButtonOcupied = false;
         });
     }

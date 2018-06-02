@@ -4,6 +4,7 @@
         <ChangePassword class="mt-2"/>
         <ChangeTeamName class="mt-2"/>
         <ChangeMailsReceived class="mt-2"/>
+        <JoinAnotherGroup class="mt-2"/>
     </div>
 </template>
 
@@ -12,12 +13,14 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import ChangeMailsReceived from '../components/profile/ChangeMailsReceived.vue';
 import ChangePassword from '../components/profile/ChangePassword.vue';
 import ChangeTeamName from '../components/profile/ChangeTeamName.vue';
+import JoinAnotherGroup from '../components/profile/JoinAnotherGroup.vue';
 
 @Component ({
   components: {
     ChangeMailsReceived,
     ChangePassword,
-    ChangeTeamName
+    ChangeTeamName,
+    JoinAnotherGroup
   }
 })
 export default class UserData extends Vue {

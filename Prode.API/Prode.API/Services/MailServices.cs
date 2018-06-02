@@ -50,6 +50,8 @@ namespace Prode.API.Services
 Este mail es para comprobar la registración al prode.
 Podes ir a la seccion perfil y pedir recibir un mail cada vez que cambies tu pronostico (o cuando el administrador cambie el suyo).
 
+Ademas en la seccion perfil, podes unirte a otros grupos y participar en varios torneos al mismo tiempo (y siempre con el mismo equipo).
+
 (Luego del mundial, la base va a ser borrada, asi que olvidense de recibir mas mails).
 "
             };
@@ -85,7 +87,7 @@ https://prodemundial.netlify.com/#/recoverpass?code={guid}"
             b.AppendLine();
             foreach(var m in matchs)
             {
-                b.AppendLine(m.Team1Name + " " + m.Team1Forecast + "-" + m.Team2Forecast + " " + m.Team2Name);
+                b.AppendLine(m.Team1Name + " " + m.Team1Forecast + "-" + m.Team2Forecast + " " + m.Team2Name + Environment.NewLine);
             }
             var msg = new SendGridMessage()
             {

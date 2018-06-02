@@ -36,6 +36,10 @@ namespace Prode.API.Services
         Task<bool> ChangeReceiveMails(int UserId, int ReceiveMails, int ReceiveAdminMails);
 
         Task<ImmutableArray<string>> GetMailsFromAdminForecastReceivers();
+
+        Task<bool> JoinGroup(int UserId, string GroupName);
+
+        Task<ImmutableArray<Groups>> GetUserGroups(int UserId);
     }
 
     public class UserService: IUserService
@@ -99,11 +103,15 @@ Where Name = @name", new
 
                 });
                 v = await db.ExecuteAsync(@"
+insert into UserGroups (UserId, GroupId)
+values (@userId, @GameGroupId);
+
 insert into UserForecast (UserId,MatchId,Team1Goals,Team2Goals,ScorePerGame)
 select @userId,id,0,0,0
-from Matches", new
+from Matches;", new
                 {
-                    userId
+                    userId,
+                    GameGroupId
                 });
             }
             return (v > 0);
@@ -260,6 +268,34 @@ Where ID = @userid", new
 Select Mail
 From Users
 Where ReceiveAdminMails = 1")).ToImmutableArray();
+            }
+        }
+
+        public async Task<bool> JoinGroup(int UserId, string GroupName)
+        {
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                return (await db.ExecuteAsync(@"
+insert into UserGroups (UserId, GroupId)
+values (@UserId, (select Id from GameGroups where gamegroup = @GroupName))", new
+                {
+                    UserId,
+                    GroupName
+                }) > 0);
+            }
+        }
+        public async Task<ImmutableArray<Groups>> GetUserGroups(int UserId)
+        {
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                return (await db.QueryAsync<Groups>(@"
+Select *
+From GameGroups
+Where Id in 
+(Select GroupId From UserGroups where UserId = @UserId)", new
+                {
+                    UserId
+                })).ToImmutableArray();
             }
         }
 

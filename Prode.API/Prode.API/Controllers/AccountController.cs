@@ -194,7 +194,9 @@ namespace Prode.API.Controllers
             return BadRequest();
         }
 
-        #region profile admin
+
+        #region profile user administration
+
         [HttpPost]
         [Authorize]
         [Route("api/changepassword")]
@@ -230,6 +232,29 @@ namespace Prode.API.Controllers
             }
             return BadRequest();
         }
+
+        [HttpPost]
+        [Authorize]
+        [Route("api/JoinOtherGroup")]
+        public async Task<IActionResult> JoinGroup(string group)
+        {
+            int UserId = User.GetClaim<int>(ClaimType.Id);
+            if (await _userService.JoinGroup(UserId, group))
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("api/GetUserGroups")]
+        public async Task<IActionResult> GetGroups()
+        {
+            int UserId = User.GetClaim<int>(ClaimType.Id);
+            return new OkObjectResult(await _userService.GetUserGroups(UserId));
+        }
+
         #endregion
 
         #region Create User
@@ -281,6 +306,7 @@ namespace Prode.API.Controllers
             }
             return BadRequest();
         }
+
 
 
         #endregion

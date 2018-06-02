@@ -10,8 +10,8 @@ namespace Prode.API.Models
         public int MatchId { get; set; }
         public int Team1 { get; set; }
         public int Team2 { get; set; }
-        public int Team1Goals { get; set; }
-        public int Team2Goals { get; set; }
+        public int? Team1Goals { get; set; }
+        public int? Team2Goals { get; set; }
 
     }
 }

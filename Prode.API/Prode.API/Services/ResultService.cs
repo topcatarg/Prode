@@ -28,12 +28,10 @@ namespace Prode.API.Services
             using (var db = _dbService.SimpleDbConnection())
             {
                 var v = await db.QueryAsync<Results>(@"
-Select 
-teamName,
-score
-From Users
-Where GameGroupId = @GroupId
-Order by Score desc", new
+Select TeamName, score
+From UserGroups ug inner join Users us on ug.UserId = us.ID 
+Where GroupId = @GroupId
+Order by score desc", new
                 {
                     GroupId
                 });
