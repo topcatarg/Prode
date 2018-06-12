@@ -27,6 +27,8 @@ namespace Prode.API.Services
 		Task<bool> CreateGroup(string GroupName);
 
 		Task<bool> ChangePaid(int UserId);
+
+		Task<bool> DeleteUserFromGroup(int UserId, int GroupId);
 	}
 
 	public class AdminService : IAdminService
@@ -77,9 +79,9 @@ select * from GameGroups");
 			using (var db = _dbService.SimpleDbConnection())
 			{
 				return (await db.QueryAsync<UserInfo>(@"
-Select Id, TeamName, Mail, HasPaid
-from Users
-Where GameGroupId = @GroupId", new
+Select u.Id, u.TeamName, u.Mail, u.HasPaid
+from UserGroups ug left join Users u on ug.UserId = u.Id
+Where ug.GroupId = @GroupId", new
 				{
 					GroupId
 				})).ToImmutableArray();
@@ -213,6 +215,20 @@ Set HasPaid = abs(HasPaid - 1)
 Where ID = @UserId", new
 				{
 					UserId
+				}) > 0);
+			}
+		}
+
+		public async Task<bool> DeleteUserFromGroup(int UserId, int GroupId)
+		{
+			using (var db = _dbService.SimpleDbConnection())
+			{
+				return (await db.ExecuteAsync(@"
+Delete From UserGroups
+Where UserId = @UserId and GroupId = @GroupId", new
+				{
+					UserId,
+					GroupId
 				}) > 0);
 			}
 		}
