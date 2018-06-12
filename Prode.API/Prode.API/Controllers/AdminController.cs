@@ -101,5 +101,14 @@ namespace Prode.API.Controllers
             await _adminService.ChangePaid(UserId);
             return Ok();
         }
+
+        [HttpDelete]
+        [Authorize(Policy = ProdePolicy.IsAdmin)]
+        [Route("api/admin/DeleteUserFromGroup")]
+        public async Task<IActionResult> DeleteUserFromGroup(int UserId, int GroupId)
+        {
+            await _adminService.DeleteUserFromGroup(UserId, GroupId);
+            return Ok();
+        }
     }
 }

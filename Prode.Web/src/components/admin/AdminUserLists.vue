@@ -23,6 +23,18 @@
                                     <i class="fa fa-cog fa-spin fa-fw"></i>
                                 </div>
                             </b-button>
+                            <br/>
+                            <b-button size="sm" variant="primary" 
+                                @click="DeleteUserFromGroup(data.item.id)"
+                                :disabled="ButtonOcupied"
+                                class="mt-3">
+                                <div v-if="!ButtonOcupied">
+                                    Borrar Usuario
+                                </div>
+                                <div v-else-if="ButtonOcupied">
+                                    <i class="fa fa-cog fa-spin fa-fw"></i>
+                                </div>
+                            </b-button>
                         </template>
                     </b-table>
                 </b-col>
@@ -110,6 +122,13 @@ export default class AdminUserList extends Vue {
         Axios.get(process.env.VUE_APP_BASE_URI + 'admin/GetUserList?GroupId=' + this.SelectedGroup,
             {withCredentials: true})
         .then(response => this.UserInfo = response.data);
+    }
+
+    private DeleteUserFromGroup(id: number) {
+        Axios.delete(process.env.VUE_APP_BASE_URI + 'admin/DeleteUserFromGroup?UserId=' + id 
+        + '&GroupId=' + this.SelectedGroup,
+            {withCredentials: true})
+        .then(response => this.ChangedSelectedGroup());
     }
 }
 </script>
