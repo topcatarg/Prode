@@ -112,6 +112,7 @@ namespace Prode.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = ProdePolicy.IsAdmin)]
         [Route("api/admin/BlankPass")]
         public async Task<IActionResult> BlankPass(int UserId)
         {

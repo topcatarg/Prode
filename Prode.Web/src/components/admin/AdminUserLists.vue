@@ -137,14 +137,14 @@ export default class AdminUserList extends Vue {
     }
 
     private DeleteUserFromGroup(id: number) {
-        Axios.delete(process.env.VUE_APP_BASE_URI + 'admin/DeleteUserFromGroup?UserId=' + id 
+        Axios.delete(process.env.VUE_APP_BASE_URI + 'admin/DeleteUserFromGroup?UserId=' + id
         + '&GroupId=' + this.SelectedGroup,
             {withCredentials: true})
         .then(response => this.ChangedSelectedGroup());
     }
 
     private BlanckPass(id: number) {
-        Axios.post(process.env.VUE_APP_BASE_URI + 'admin/BlankPass?UserId=' + id,
+        Axios.post(process.env.VUE_APP_BASE_URI + 'admin/BlankPass?UserId=' + id, {},
             {withCredentials: true})
         .then(response => this.ChangedSelectedGroup());
     }
