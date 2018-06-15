@@ -110,5 +110,14 @@ namespace Prode.API.Controllers
             await _adminService.DeleteUserFromGroup(UserId, GroupId);
             return Ok();
         }
+
+        [HttpPost]
+        [Authorize(Policy = ProdePolicy.IsAdmin)]
+        [Route("api/admin/BlankPass")]
+        public async Task<IActionResult> BlankPass(int UserId)
+        {
+            await _adminService.BlankPass(UserId);
+            return Ok();
+        }
     }
 }

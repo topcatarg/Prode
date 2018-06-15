@@ -35,6 +35,18 @@
                                     <i class="fa fa-cog fa-spin fa-fw"></i>
                                 </div>
                             </b-button>
+                            <br/>
+                            <b-button size="sm" variant="primary" 
+                                @click="BlanckPass(data.item.id)"
+                                :disabled="ButtonOcupied"
+                                class="mt-3">
+                                <div v-if="!ButtonOcupied">
+                                    Blanquear pass
+                                </div>
+                                <div v-else-if="ButtonOcupied">
+                                    <i class="fa fa-cog fa-spin fa-fw"></i>
+                                </div>
+                            </b-button>
                         </template>
                     </b-table>
                 </b-col>
@@ -125,8 +137,14 @@ export default class AdminUserList extends Vue {
     }
 
     private DeleteUserFromGroup(id: number) {
-        Axios.delete(process.env.VUE_APP_BASE_URI + 'admin/DeleteUserFromGroup?UserId=' + id 
+        Axios.delete(process.env.VUE_APP_BASE_URI + 'admin/DeleteUserFromGroup?UserId=' + id
         + '&GroupId=' + this.SelectedGroup,
+            {withCredentials: true})
+        .then(response => this.ChangedSelectedGroup());
+    }
+
+    private BlanckPass(id: number) {
+        Axios.post(process.env.VUE_APP_BASE_URI + 'admin/BlankPass?UserId=' + id, {},
             {withCredentials: true})
         .then(response => this.ChangedSelectedGroup());
     }
