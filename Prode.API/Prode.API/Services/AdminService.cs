@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Prode.API.Models;
 using Dapper;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace Prode.API.Services
 {
@@ -29,6 +31,8 @@ namespace Prode.API.Services
 		Task<bool> ChangePaid(int UserId);
 
 		Task<bool> DeleteUserFromGroup(int UserId, int GroupId);
+
+		Task<bool> BlankPass(int UserId);
 	}
 
 	public class AdminService : IAdminService
@@ -231,6 +235,30 @@ Where UserId = @UserId and GroupId = @GroupId", new
 					GroupId
 				}) > 0);
 			}
+		}
+
+		public async Task<bool> BlankPass(int UserId)
+		{
+			string newpass = EncryptPassword("123456");
+			using (var db = _dbService.SimpleDbConnection())
+			{
+				return (await db.ExecuteAsync(@"
+Update Users
+Set Password = @pass
+Where ID = @UserId", new
+				{
+					UserId, 
+					pass = newpass
+				}) > 0);
+			}
+		}
+
+		private string EncryptPassword(string pass)
+		{
+			byte[] data = Encoding.UTF8.GetBytes(pass);
+			SHA512 shaM = new SHA512Managed();
+			byte[] resul = shaM.ComputeHash(data);
+			return Encoding.UTF8.GetString(resul);
 		}
 
 	}
