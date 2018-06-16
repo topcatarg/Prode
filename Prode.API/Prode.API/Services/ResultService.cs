@@ -28,7 +28,9 @@ namespace Prode.API.Services
             using (var db = _dbService.SimpleDbConnection())
             {
                 var v = await db.QueryAsync<Results>(@"
-Select TeamName, score
+Select TeamName, 
+score, 
+us.ID as UserId
 From UserGroups ug inner join Users us on ug.UserId = us.ID 
 Where GroupId = @GroupId
 Order by score desc", new

@@ -72,6 +72,9 @@
                 <b-img v-if="data.item.team2Flag!=null" :src="'http://www.countryflags.io/'+ data.item.team2Flag +'/shiny/24.png'" />
                 {{data.item.team2Name}}
             </template>
+            <template slot="score" slot-scope="data">
+                {{data.item.points}}
+            </template>
         </b-table>
     </div>
 </template>
@@ -112,6 +115,7 @@ export default class Forecast extends Vue {
         this.fields.push(new IFixtureTableFields('team1Name', 'Equipo'));
         this.fields.push(new IFixtureTableFields('Result', 'Resultado'));
         this.fields.push(new IFixtureTableFields('team2Name', 'Equipo'));
+        this.fields.push(new IFixtureTableFields('score', 'Puntaje'));
         let i: number;
         for (i = 0; i < 51; i++) {
             this.options.push( {
