@@ -89,5 +89,13 @@ namespace Prode.API.Controllers
             return BadRequest();
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("api/forecast/others")]
+        public async Task<IActionResult> GetOtherForecast(int UserId)
+        {
+            return new OkObjectResult(await _forecastService.GetClosedUserMatchs(UserId));
+        }
+
     }
 }

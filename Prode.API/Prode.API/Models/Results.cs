@@ -7,6 +7,7 @@ namespace Prode.API.Models
 {
     public class Results
     {
+        public int UserId;
         public string TeamName;
         public int Score;
     }

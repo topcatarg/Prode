@@ -16,6 +16,8 @@ namespace Prode.API.Services
 
         Task<bool> FillAllGames(Match[] MatchsData);
 
+        Task<ImmutableArray<Matchs>> GetClosedUserMatchs(int userId);
+
     }
 
     public class ForecastService: IForecastService
@@ -40,7 +42,8 @@ strftime(""%d/%m %H:%M"",date) as StandardDate,
 (select Code from Teams t where t.id = m.team1) as Team1Flag,
 (select Code from Teams t where t.id = m.team2) as Team2Flag,
 u.team1Goals as Team1Forecast,
-u.team2Goals as Team2Forecast
+u.team2Goals as Team2Forecast,
+u.ScorePerGame as Points
 from Matches m inner join UserForecast u on m.id = u.MatchId
 where u.UserId = @userid", new
                     {
@@ -115,6 +118,35 @@ Where UserId = @userid and Id = @matchid", new
             }
         }
 
+        public async Task<ImmutableArray<Matchs>> GetClosedUserMatchs(int userId)
+        {
+            using (var db = _dbService.SimpleDbConnection())
+            {
+                var v = await
+                    db.QueryAsync<Matchs>(@"
+select *,
+strftime(""%d/%m %H:%M"",date) as StandardDate,
+(select Team from Teams t where t.id = m.team1) as Team1Name,
+(select Team from Teams t where t.id = m.team2) as Team2Name,
+(select Code from Teams t where t.id = m.team1) as Team1Flag,
+(select Code from Teams t where t.id = m.team2) as Team2Flag,
+u.team1Goals as Team1Forecast,
+u.team2Goals as Team2Forecast,
+u.ScorePerGame as Points
+from Matches m inner join UserForecast u on m.id = u.MatchId
+where u.UserId = @userid
+and m.closed = 1", new
+                    {
+                        userid = userId
+                    });
+                DateTime t = GetTime();
+                foreach (var l in v)
+                {
+                    l.CanUpdate = (l.Date.CompareTo(t) == 1);
+                }
+                return v.ToImmutableArray();
+            }
+        }
 
         #region Private functions
 
