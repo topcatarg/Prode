@@ -9,7 +9,6 @@
 <script lang='ts'>
 
 import Header from '@/components/Header.vue';
-import IConfig from '@/models/Config.ts';
 import IStats from '@/models/Stats.ts';
 import Axios from 'axios';
 import { Component, Prop, Vue } from 'vue-property-decorator';
@@ -22,7 +21,6 @@ import store from './store';
 })
 export default class App extends Vue {
 
-  public config?: IConfig;
   public stats?: IStats;
 
   private data() {

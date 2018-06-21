@@ -75,6 +75,14 @@ namespace Prode.API.Controllers
 
         [HttpPost]
         [Authorize(Policy = ProdePolicy.IsAdmin)]
+        [Route("api/admin/UpdateDate")]
+        public async Task<IActionResult> UpdateDate(int MatchId, string Date)
+        {
+            return new OkObjectResult(await _adminService.UpdateDate(MatchId, Date));
+        }
+
+        [HttpPost]
+        [Authorize(Policy = ProdePolicy.IsAdmin)]
         [Route("api/admin/UpdatePoints")]
         public async Task<IActionResult> UpdateScores()
         {
@@ -119,5 +127,32 @@ namespace Prode.API.Controllers
             await _adminService.BlankPass(UserId);
             return Ok();
         }
+
+        [HttpGet]
+        [Authorize(Policy = ProdePolicy.IsAdmin)]
+        [Route("api/admin/GetEnvironmentVariables")]
+        public async Task<IActionResult> GetEnvironmentVariables()
+        {
+            return new OkObjectResult(await _adminService.GetEnvironmentVariables());
+        }
+
+        [HttpPost]
+        [Authorize(Policy = ProdePolicy.IsAdmin)]
+        [Route("api/admin/addenvironmentvariable")]
+        public async Task<IActionResult> AddEnvironmentVariable(string key, string value)
+        {
+            await _adminService.AddEnvironmentVariable(key,value);
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Authorize(Policy = ProdePolicy.IsAdmin)]
+        [Route("api/admin/deleteenvironmentvariable")]
+        public async Task<IActionResult> DeleteEnvironmentVariable(string key)
+        {
+            await _adminService.DeleteEnvironmentVariable(key);
+            return Ok();
+        }
+
     }
 }

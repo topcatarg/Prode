@@ -38,6 +38,17 @@ namespace Prode.API.Controllers
             return BadRequest();
         }
 
+        [HttpGet]
+        [Route("api/migrate/migrate2")]
+        public async Task<IActionResult> Migrate2()
+        {
+            if (await _migrateService.Migrate2Async())
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+
 
     }
 }

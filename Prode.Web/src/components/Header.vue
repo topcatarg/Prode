@@ -22,7 +22,6 @@
 </template>
 
 <script lang="ts">
-import IConfig from '@/models/Config.ts';
 import axios from 'axios';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { IUserInfo, ProfileState  } from '../models/UserInfo';
@@ -30,7 +29,7 @@ import store from '../store';
 
 const AppProps = Vue.extend({
   props: {
-    config: Object as () => IConfig
+    // config: Object as () => IConfig
     // config : {IConfig: {Object}}
   }
 });

@@ -33,6 +33,14 @@ namespace Prode.API.Services
 		Task<bool> DeleteUserFromGroup(int UserId, int GroupId);
 
 		Task<bool> BlankPass(int UserId);
+
+		Task<bool> UpdateDate(int MatchId, string Date);
+
+		Task<ImmutableArray<EnvironmentVariables>> GetEnvironmentVariables();
+
+		Task<bool> AddEnvironmentVariable(string key, string value);
+
+		Task<bool> DeleteEnvironmentVariable(string key);
 	}
 
 	public class AdminService : IAdminService
@@ -129,6 +137,24 @@ where id = @matchid", new
 					team1 = match.Team1,
 					team2 = match.Team2,
 					matchid = match.MatchId
+				});
+				return v > 0;
+			}
+		}
+
+		public async Task<bool> UpdateDate(int MatchId, string Date)
+		{
+			Date = Date.Replace("T", " ");
+			Date = Date.Replace(":00:00", ":00");
+			using (var db = _dbService.SimpleDbConnection())
+			{
+				var v = await db.ExecuteAsync(@"
+Update Matches
+Set Date = @Date
+where id = @MatchId", new
+				{
+					Date,
+					MatchId
 				});
 				return v > 0;
 			}
@@ -249,6 +275,43 @@ Where ID = @UserId", new
 				{
 					UserId, 
 					pass = newpass
+				}) > 0);
+			}
+		}
+
+		public async Task<ImmutableArray<EnvironmentVariables>> GetEnvironmentVariables()
+		{
+			using (var db = _dbService.SimpleDbConnection())
+			{
+				var v = await db.QueryAsync<EnvironmentVariables>(@"
+select * from EnvironmentVariables");
+				return v.ToImmutableArray();
+			}
+		}
+
+		public async Task<bool> AddEnvironmentVariable(string key, string value)
+		{
+			using (var db = _dbService.SimpleDbConnection())
+			{
+				return (await db.ExecuteAsync(@"
+Insert into EnvironmentVariables (key,value)
+Values (@key,@value)", new
+				{
+					key,
+					value
+				}) > 0);
+			}
+		}
+
+		public async Task<bool> DeleteEnvironmentVariable(string key)
+		{
+			using (var db = _dbService.SimpleDbConnection())
+			{
+				return (await db.ExecuteAsync(@"
+Delete From EnvironmentVariables
+Where key = @key", new
+				{
+					key
 				}) > 0);
 			}
 		}

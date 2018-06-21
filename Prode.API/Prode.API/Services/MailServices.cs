@@ -27,20 +27,22 @@ namespace Prode.API.Services
 
     public class MailServices: IMailServices
     {
-        private string ApiKey { get;}
+        private string ApiKey { get; set; }
         private readonly IConfiguration _configuration;
         private const string FromAddres = @"donotreply@prodemundial.com";
         private const string FromName = @"El prode";
+        private readonly IEnvironmentVariableService _environmentVariableService;
         
-        public MailServices(IConfiguration configuration)
+        public MailServices(IConfiguration configuration, IEnvironmentVariableService environmentVariableService)
         {
             _configuration = configuration;
-            ApiKey = _configuration.GetValue<string>("APIKEY");
+            //ApiKey = _configuration.GetValue<string>("APIKEY");
+            _environmentVariableService = environmentVariableService;
         }
 
         public async Task<HttpStatusCode> SendHelloMail(string MailTo)
         {
-
+            GetKey();
             var client = new SendGridClient(ApiKey);
             var msg = new SendGridMessage()
             {
@@ -62,6 +64,7 @@ Ademas en la seccion perfil, podes unirte a otros grupos y participar en varios 
 
         public async Task<HttpStatusCode> SendRecoverPassword(string MailTo, Guid guid)
         {
+            GetKey();
             var client = new SendGridClient(ApiKey);
             var msg = new SendGridMessage()
             {
@@ -79,6 +82,7 @@ https://prodemundial.netlify.com/#/recoverpass?code={guid}"
 
         public async Task<HttpStatusCode> SendMyResultsAsync(string mail, string TeamName, ImmutableArray<Matchs> matchs)
         {
+            GetKey();
             var client = new SendGridClient(ApiKey);
             StringBuilder b = new StringBuilder();
             b.AppendLine("Estos son los resultados de los partidos que pronosticastes!");
@@ -102,6 +106,7 @@ https://prodemundial.netlify.com/#/recoverpass?code={guid}"
 
         public async Task<HttpStatusCode> SendAdminResultsAsync(ImmutableArray<string> MailsTo, string TeamName, ImmutableArray<Matchs> matchs)
         {
+            GetKey();
             var client = new SendGridClient(ApiKey);
             StringBuilder b = new StringBuilder();
             b.AppendLine("Estos son los resultados de los partidos que pronosticastes!");
@@ -126,5 +131,17 @@ https://prodemundial.netlify.com/#/recoverpass?code={guid}"
             var response = await client.SendEmailAsync(msg);
             return response.StatusCode;
         }
+
+        #region Get KEY!
+
+        private async void GetKey()
+        {
+            if (string.IsNullOrEmpty(ApiKey))
+            {
+                ApiKey = await _environmentVariableService.GetValueAsync("mail");
+            }
+        }
+
+        #endregion
     }
 }
