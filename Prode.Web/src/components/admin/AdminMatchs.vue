@@ -1,7 +1,11 @@
 <template>
     <div class="container">
         <b-table striped hover :items="items" :fields="fields">
-            <template slot="date"/>
+            <template slot="date" slot-scope="data">
+                <b-form-input v-model="data.item.date"
+                type="text">
+                </b-form-input>
+            </template>
             <template slot="team1Name" slot-scope="data">
                 <b-form-select v-model="data.item.team1" :options="teamoptions" class="mb-3" />
             </template>
@@ -26,9 +30,19 @@
                         <i class="fa fa-cog fa-spin fa-fw"></i>
                     </div>
                 </b-button>
+                <br/>
                 <b-button size="sm" variant="primary" @click="UpdateTeams(data.item.id)" :disabled="ButtonOcupied" class="mt-2">
                     <div v-if="!ButtonOcupied">
                         Actualizar equipos
+                    </div>
+                    <div v-else-if="ButtonOcupied">
+                        <i class="fa fa-cog fa-spin fa-fw"></i>
+                    </div>
+                </b-button>
+                <br/>
+                <b-button size="sm" variant="primary" @click="UpdateDate(data.item.id)" :disabled="ButtonOcupied" class="mt-2">
+                    <div v-if="!ButtonOcupied">
+                        Actualizar fecha
                     </div>
                     <div v-else-if="ButtonOcupied">
                         <i class="fa fa-cog fa-spin fa-fw"></i>
@@ -45,8 +59,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import IFixtureData from '../../helpers/FixtureData';
 import IResultTableFields from '../../helpers/ResultTableFields';
 import ISelectInput from '../../helpers/SelectInputHelper';
-import IMatchResult from '../../models/MatchResult'
-import ITeams from '../../models/Teams'
+import IMatchResult from '../../models/MatchResult';
+import ITeams from '../../models/Teams';
 
 @Component
 export default class AdminMatchs extends Vue {
@@ -87,13 +101,13 @@ export default class AdminMatchs extends Vue {
             key: 'Actions',
             label: ''
         });
-        var i: number;
+        let i: number;
         for (i = 0; i < 51; i++) {
             this.options.push( {
                 value: i,
                 text: i.toString()
-            })
-        }  
+            });
+        }
     }
 
     private mounted() {
@@ -104,26 +118,25 @@ export default class AdminMatchs extends Vue {
                 this.teamoptions.push({
                     value: element.id,
                     text: element.team
-                })
+                });
             });
-        })
+        });
         this.GetAllResults();
     }
 
     private Update(id: number) {
         this.ButtonOcupied = true;
-        var i = this.items.find(p => p.id === id);
-        if (i === undefined)
-        {
+        const i = this.items.find(p => p.id === id);
+        if (i === undefined) {
             return;
         }
-        var m: IMatchResult = {
+        const m: IMatchResult = {
             MatchId: i.id,
             Team1: i.team1,
             Team2: i.team2,
             Team1Goals: i.team1Goals === undefined ? 0 : i.team1Goals,
             Team2Goals: i.team2Goals === undefined ? 0 : i.team2Goals
-        }
+        };
         Axios.post(process.env.VUE_APP_BASE_URI + 'admin/UpdateGame',
         m,
         {withCredentials: true})
@@ -134,23 +147,37 @@ export default class AdminMatchs extends Vue {
         .catch(error => this.ButtonOcupied = false);
     }
 
-    private UpdateTeams(id: number){
+    private UpdateTeams(id: number) {
         this.ButtonOcupied = true;
-        var i = this.items.find(p => p.id === id);
-        if (i === undefined)
-        {
+        const i = this.items.find(p => p.id === id);
+        if (i === undefined) {
             return;
         }
-        var m: IMatchResult = {
+        const m: IMatchResult = {
             MatchId: i.id,
             Team1: i.team1,
             Team2: i.team2,
             Team1Goals: i.team1Goals === undefined ? 0 : i.team1Goals,
             Team2Goals: i.team2Goals === undefined ? 0 : i.team2Goals
-        }
-        console.log(m);
+        };
         Axios.post(process.env.VUE_APP_BASE_URI + 'admin/UpdateTeams',
         m,
+        {withCredentials: true})
+        .then(response => {
+            this.ButtonOcupied = false;
+            this.GetAllResults();
+        })
+        .catch(error => this.ButtonOcupied = false);
+    }
+
+    private UpdateDate(id: number) {
+        this.ButtonOcupied = true;
+        const i = this.items.find(p => p.id === id);
+        if (i === undefined) {
+            return;
+        }
+        Axios.post(process.env.VUE_APP_BASE_URI + 'admin/UpdateDate?MatchId=' + i.id +
+        '&Date=' + i.date, { },
         {withCredentials: true})
         .then(response => {
             this.ButtonOcupied = false;
