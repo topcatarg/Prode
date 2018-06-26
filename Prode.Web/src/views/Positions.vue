@@ -7,7 +7,7 @@
                 </b-col>
             </b-row>
         </b-container>
-        <b-table striped hover :items="items" :fields="fields" class="mt-2">
+        <b-table striped hover stacked="md" :items="items" :fields="fields" class="mt-2">
             <template slot="userdata" slot-scope="data">
                 <b-button @click="ShowModal(data.item.userId)" variant="primary">Ver puntajes</b-button>
             </template>

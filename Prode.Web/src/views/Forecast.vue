@@ -164,10 +164,9 @@ export default class Forecast extends Vue {
         v,
         {withCredentials: true})
         .then(response => {
+            this.GetMyForecast();
             this.ButtonOcupied = false;
             this.GeneralMessage = 'Se actualizaron sus datos';
-            this.GetMyForecast();
-            this.filtrar();
         })
         .catch(error => {
             this.ButtonOcupied = false;
@@ -177,11 +176,15 @@ export default class Forecast extends Vue {
 
     private GetMyForecast() {
         Axios.get(process.env.VUE_APP_BASE_URI + 'forecast/my?UserId=' + this.ComputedUserId, {withCredentials: true})
-        .then(Response => this.items = this.filteredItems = Response.data);
+        .then(Response => {
+            this.items = this.filteredItems = Response.data;
+            this.filtrar();
+        });
     }
 
     @Watch('FilterValue')
     private filtrar() {
+        console.log(this.OnlyAvailables);
         if (this.FilterValue === '') {
             if (!this.OnlyAvailables) {
                 this.filteredItems = this.items.filter(i => i.canUpdate);

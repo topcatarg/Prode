@@ -8,7 +8,7 @@
             </b-row>
             <b-row class="mt-2">
                 <b-col>
-                    <b-table striped hover :items="UserInfo" :fields="fields" class="ml-2 mr-2">
+                    <b-table striped hover stacked="md" :items="UserInfo" :fields="fields" class="ml-2 mr-2">
                         <template slot="hasPaid" slot-scope="data">
                             <b-form-checkbox v-model="data.item.hasPaid" disabled/>
                         </template>

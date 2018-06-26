@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <b-table striped hover :items="items" :fields="fields">
+        <b-table striped hover stacked="md" :items="items" :fields="fields">
             <template slot="date" slot-scope="data">
                 <b-form-input v-model="data.item.date"
                 type="text">

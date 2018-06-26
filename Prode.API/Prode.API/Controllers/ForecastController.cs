@@ -13,6 +13,7 @@ using System.Collections.Immutable;
 namespace Prode.API.Controllers
 {
     
+    [Produces("application/json")]
     public class ForecastController : Controller
     {
         private readonly IForecastService _forecastService;
