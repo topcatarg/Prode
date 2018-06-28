@@ -42,7 +42,7 @@
                 </b-col>
             </b-row>
         </b-container>
-        <b-table striped hover stacked="md" :items="filteredItems" :fields="fields" class="ml-2 mr-2">
+        <b-table striped hover stacked="md" :items="FilteredList" :fields="fields" class="ml-2 mr-2">
             <template slot="wwGroup" slot-scope="data">
                 {{data.item.wwGroup}}
             </template>
@@ -178,13 +178,11 @@ export default class Forecast extends Vue {
         Axios.get(process.env.VUE_APP_BASE_URI + 'forecast/my?UserId=' + this.ComputedUserId, {withCredentials: true})
         .then(Response => {
             this.items = this.filteredItems = Response.data;
-            this.filtrar();
         });
     }
 
     @Watch('FilterValue')
     private filtrar() {
-        console.log(this.OnlyAvailables);
         if (this.FilterValue === '') {
             if (!this.OnlyAvailables) {
                 this.filteredItems = this.items.filter(i => i.canUpdate);
@@ -196,6 +194,22 @@ export default class Forecast extends Vue {
                 this.filteredItems = this.items.filter(i => i.canUpdate && i.wwGroup === this.FilterValue);
             } else {
                 this.filteredItems = this.items.filter(i => i.wwGroup === this.FilterValue);
+            }
+        }
+    }
+
+    private get FilteredList(): IFixtureData[] {
+        if (this.FilterValue === '') {
+            if (this.OnlyAvailables) {
+                return this.items.filter(i => i.canUpdate);
+            } else {
+                return this.items;
+            }
+        } else {
+            if (this.OnlyAvailables) {
+                return this.items.filter(i => i.canUpdate && i.wwGroup === this.FilterValue);
+            } else {
+                return this.items.filter(i => i.wwGroup === this.FilterValue);
             }
         }
     }
