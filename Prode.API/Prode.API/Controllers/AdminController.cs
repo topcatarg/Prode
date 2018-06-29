@@ -96,7 +96,7 @@ namespace Prode.API.Controllers
         {
             if (await _adminService.CreateGroup(GroupName))
             {
-                return Ok();
+                return new OkObjectResult(true);
             }
             return BadRequest();
         }
@@ -107,7 +107,7 @@ namespace Prode.API.Controllers
         public async Task<IActionResult> ChangePaidValue(int UserId)
         {
             await _adminService.ChangePaid(UserId);
-            return Ok();
+            return new OkObjectResult(true);
         }
 
         [HttpDelete]
@@ -116,7 +116,7 @@ namespace Prode.API.Controllers
         public async Task<IActionResult> DeleteUserFromGroup(int UserId, int GroupId)
         {
             await _adminService.DeleteUserFromGroup(UserId, GroupId);
-            return Ok();
+            return new OkObjectResult(true);
         }
 
         [HttpPost]
@@ -125,7 +125,7 @@ namespace Prode.API.Controllers
         public async Task<IActionResult> BlankPass(int UserId)
         {
             await _adminService.BlankPass(UserId);
-            return Ok();
+            return new OkObjectResult(true);
         }
 
         [HttpGet]
@@ -142,7 +142,7 @@ namespace Prode.API.Controllers
         public async Task<IActionResult> AddEnvironmentVariable(string key, string value)
         {
             await _adminService.AddEnvironmentVariable(key,value);
-            return Ok();
+            return new OkObjectResult(true);
         }
 
         [HttpDelete]
@@ -151,7 +151,7 @@ namespace Prode.API.Controllers
         public async Task<IActionResult> DeleteEnvironmentVariable(string key)
         {
             await _adminService.DeleteEnvironmentVariable(key);
-            return Ok();
+            return new OkObjectResult(true);
         }
 
     }

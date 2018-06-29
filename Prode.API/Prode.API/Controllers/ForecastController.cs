@@ -47,7 +47,7 @@ namespace Prode.API.Controllers
         {
             if (await _forecastService.FillMatch(MatchData))
             {
-                return Ok();
+                return new OkObjectResult(true);
             }
             else
             {
@@ -85,7 +85,7 @@ namespace Prode.API.Controllers
                     //send mail to users
                     await _mailService.SendAdminResultsAsync(to, TeamName, m);
                 }
-                return Ok();
+                return new OkObjectResult(true);
             }
             return BadRequest();
         }

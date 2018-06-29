@@ -93,7 +93,7 @@ namespace Prode.API.Controllers
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(identity));
 
-            return Ok();
+            return new OkObjectResult(true);
 
             ////return Redirect(_seApiService.GetInitialOauthUrl(GetOauthReturnUrl(), returnUrl));
         }
@@ -102,7 +102,7 @@ namespace Prode.API.Controllers
         public async Task<IActionResult> LogOut(string returnUrl = null)
         {
             await HttpContext.SignOutAsync();
-            return new OkResult();
+            return new OkObjectResult(true);
             //return Redirect(returnUrl ?? "/");
         }
 
@@ -177,7 +177,7 @@ namespace Prode.API.Controllers
                 //Store guid on recovery table 
                 if (await _userService.StoreGuidRecovery(guid, mail))
                 {
-                    return Ok();
+                    return new OkObjectResult(true);
                 }
             }
             return BadRequest();
@@ -189,7 +189,7 @@ namespace Prode.API.Controllers
         {
             if (await _userService.ChangePasswordAfterLost(pass, guid))
             {
-                return Ok();
+                return new OkObjectResult(true);
             }
             return BadRequest();
         }
@@ -204,7 +204,7 @@ namespace Prode.API.Controllers
         {
             if (await _userService.ChangePassword(UserId, NewPassword))
             {
-                return Ok();
+                return new OkObjectResult(true);
             }
             return BadRequest();
         }
@@ -216,7 +216,7 @@ namespace Prode.API.Controllers
         {
             if (await _userService.ChangeTeamName(UserId,TeamName))
             {
-                return Ok();
+                return new OkObjectResult(true);
             }
             return BadRequest();
         }
@@ -228,7 +228,7 @@ namespace Prode.API.Controllers
         {
             if (await _userService.ChangeReceiveMails(UserId, ReceiveMails?1:0, ReceiveAdminMails?1:0))
             {
-                return Ok();
+                return new OkObjectResult(true);
             }
             return BadRequest();
         }
@@ -241,7 +241,7 @@ namespace Prode.API.Controllers
             int UserId = User.GetClaim<int>(ClaimType.Id);
             if (await _userService.JoinGroup(UserId, group))
             {
-                return Ok();
+                return new OkObjectResult(true);
             }
             return BadRequest();
         }
@@ -286,7 +286,7 @@ namespace Prode.API.Controllers
             if (success)
             {
                 await _mailService.SendHelloMail(user.Mail);
-                return new OkResult();
+                return new OkObjectResult(true);
             }
             else
             {

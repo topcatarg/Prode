@@ -7,7 +7,7 @@
                 </b-col>
             </b-row>
         </b-container>
-        <b-table striped hover stacked="md" :items="items" :fields="fields" class="mt-2">
+        <b-table striped hover stacked="md" :items="ChangeGroup" :fields="fields" class="mt-2">
             <template slot="userdata" slot-scope="data">
                 <b-button @click="ShowModal(data.item.userId)" variant="primary">Ver puntajes</b-button>
             </template>
@@ -26,6 +26,7 @@ import IResultTableFields from '../helpers/ResultTableFields';
 import ISelectInput from '../helpers/SelectInputHelper';
 import GameGroups from '../models/GameGroups';
 import IResults from '../models/Results';
+import { resolve } from 'url';
 
 @Component({
   components: {
@@ -75,8 +76,17 @@ export default class Positiones extends Vue {
         });
     }
 
+    private get ChangeGroup(): IResults[] {
+        console.log('computed');
+        const r = await Axios.get(process.env.VUE_APP_BASE_URI + 'results?GroupNumber='
+        + this.selected,
+        {withCredentials: true});
+        console.log(r);
+        return [];
+    }
+
     @Watch ('selected')
-    private ChangeGroup() {
+    private ChangeGroup2() {
         Axios.get(process.env.VUE_APP_BASE_URI + 'results?GroupNumber='
         + this.selected,
         {withCredentials: true})
