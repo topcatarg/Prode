@@ -42,7 +42,7 @@
                 </b-col>
             </b-row>
         </b-container>
-        <b-table striped hover stacked="md" :items="filteredItems" :fields="fields" class="ml-2 mr-2">
+        <b-table striped hover stacked="md" :items="FilteredList" :fields="fields" class="ml-2 mr-2">
             <template slot="wwGroup" slot-scope="data">
                 {{data.item.wwGroup}}
             </template>
@@ -164,10 +164,9 @@ export default class Forecast extends Vue {
         v,
         {withCredentials: true})
         .then(response => {
+            this.GetMyForecast();
             this.ButtonOcupied = false;
             this.GeneralMessage = 'Se actualizaron sus datos';
-            this.GetMyForecast();
-            this.filtrar();
         })
         .catch(error => {
             this.ButtonOcupied = false;
@@ -177,7 +176,9 @@ export default class Forecast extends Vue {
 
     private GetMyForecast() {
         Axios.get(process.env.VUE_APP_BASE_URI + 'forecast/my?UserId=' + this.ComputedUserId, {withCredentials: true})
-        .then(Response => this.items = this.filteredItems = Response.data);
+        .then(Response => {
+            this.items = this.filteredItems = Response.data;
+        });
     }
 
     @Watch('FilterValue')
@@ -193,6 +194,22 @@ export default class Forecast extends Vue {
                 this.filteredItems = this.items.filter(i => i.canUpdate && i.wwGroup === this.FilterValue);
             } else {
                 this.filteredItems = this.items.filter(i => i.wwGroup === this.FilterValue);
+            }
+        }
+    }
+
+    private get FilteredList(): IFixtureData[] {
+        if (this.FilterValue === '') {
+            if (this.OnlyAvailables) {
+                return this.items.filter(i => i.canUpdate);
+            } else {
+                return this.items;
+            }
+        } else {
+            if (this.OnlyAvailables) {
+                return this.items.filter(i => i.canUpdate && i.wwGroup === this.FilterValue);
+            } else {
+                return this.items.filter(i => i.wwGroup === this.FilterValue);
             }
         }
     }

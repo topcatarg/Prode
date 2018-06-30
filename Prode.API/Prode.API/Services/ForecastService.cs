@@ -45,7 +45,8 @@ u.team1Goals as Team1Forecast,
 u.team2Goals as Team2Forecast,
 u.ScorePerGame as Points
 from Matches m inner join UserForecast u on m.id = u.MatchId
-where u.UserId = @userid", new
+where u.UserId = @userid
+order by date", new
                     {
                         userid = userId
                     });

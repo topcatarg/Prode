@@ -28,7 +28,7 @@
             <ErrorAlert :message=this.GeneralError class="mt-2"/>
             <SuccessAlert :message=this.GeneralMessage class="mt-2"/>
         </div>
-        <b-table striped hover :items="items" :fields="fields">
+        <b-table striped hover stacked="md" :items="items" :fields="fields">
             <template slot="Actions" slot-scope="data">
                 <b-button size="sm" variant="primary" @click="DeleteKey(data.item.key)" :disabled="ButtonOcupied">
                     <div v-if="!ButtonOcupied">
