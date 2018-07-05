@@ -45,14 +45,15 @@ namespace Prode.API.Controllers
         [Route("api/forecast/fillgame")]
         public async Task<IActionResult> FillGame([FromBody]Match MatchData )
         {
-            if (await _forecastService.FillMatch(MatchData))
-            {
-                return new OkObjectResult(true);
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return new OkObjectResult(true);
+            //if (await _forecastService.FillMatch(MatchData))
+            //{
+            //    return new OkObjectResult(true);
+            //}
+            //else
+            //{
+            //    return BadRequest();
+            //}
         }
 
         [HttpPost]
