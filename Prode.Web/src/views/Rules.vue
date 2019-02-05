@@ -55,7 +55,8 @@
                         10% del total al tercer puesto
                     </li>
                 </ul>
-                El monto de inscripcion es a discutir ($100?)
+                El monto de inscripcion es a discutir ($100?) <br/>
+                <b-button to="/Privacy"> Ver politica de privacidad </b-button>
             </p>
         </b-jumbotron>
     </div>

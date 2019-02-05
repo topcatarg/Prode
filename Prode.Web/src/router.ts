@@ -6,6 +6,7 @@ import Forecast from './views/Forecast.vue';
 import Login from './views/Login.vue';
 import Logout from './views/Logout.vue';
 import Position from './views/Positions.vue';
+import Privacy from './views/PrivacyPolicy.vue';
 import Rules from './views/Rules.vue';
 import Schedule from './views/Schedule.vue';
 import UserData from './views/UserData.vue';
@@ -64,6 +65,11 @@ export default new Router({
       path: '/Profile',
       name: 'UserData',
       component: UserData
+    },
+    {
+      path: '/Privacy',
+      name: 'privacy',
+      component: Privacy
     }
   ]
 });
