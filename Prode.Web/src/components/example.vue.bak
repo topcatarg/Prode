@@ -34,6 +34,10 @@ const AppProps = Vue.extend({
   }
 })
 export default class App extends AppProps {
+  props: {
+    //props as object
+    config: Object as () => IConfig
+  }
   // inital data
   msg: number = 123
   // use prop values for initial data
