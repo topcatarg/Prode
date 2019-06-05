@@ -5,17 +5,17 @@
             Reglas
             </template>
             <p>
-            El puntaje será el siguiente:   (Ejemplo basado en Argentina 2 – Islandia 0 )
+            El puntaje será el siguiente:   (Ejemplo basado en Argentina 2 – Colombia 0 )
             </p>
             <ul>
             <li>
-            3 puntos por resultados exacto acertado  (Pronosticó Argentina 2 – Islandia 0)
+            3 puntos por resultados exacto acertado  (Pronosticó Argentina 2 – Colombia 0)
             </li>
             <li>
-            2 puntos por acertar el ganador y la diferencia (Pronosticó Argentina 3 -  Islandia 1)
+            2 puntos por acertar el ganador y la diferencia (Pronosticó Argentina 3 -  Colombia 1)
             </li>
             <li>
-            1 puntos por acertar el ganador  (Pronosticó Argentina 1 – Islandia 0)
+            1 puntos por acertar el ganador  (Pronosticó Argentina 1 – Colombia 0)
             </li>
             <li>
                 Para el caso de empates, se respetan los 3 puntos por resultado exacto, o 1 punto por pronosticar que empataron
@@ -32,21 +32,11 @@
                 Por defecto cada participante empieza con todos los partidos 0 - 0
             </p>
             <p>
-                Se hara un corte de premios al finalizar la primera ronda, donde se premiara de la siguiente forma:
                 <br/>
+                Al finalizar la copa america, se premiara de la siguiente forma:
                 <ul>
                     <li>
-                        15 % del total de la apuesta para el primer puesto
-                    </li>
-                    <li>
-                        5% del total de la apuesta para el segundo puesto
-                    </li>
-                </ul>
-                <br/>
-                Al finalizar el mundial, se premiara de la siguiente forma:
-                <ul>
-                    <li>
-                        50% del total al ganador
+                        70% del total al ganador
                     </li>
                     <li>
                         20% del total al segundo puesto
